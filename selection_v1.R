@@ -3,24 +3,25 @@
 # GOAL: Look at recruitment. See who is applying to a corp, and how corps advertise.
 
 
-library(RODBC);
-library(ggplot2);
-library(lubridate);
-library(plyr);
-library(scales);
-library(data.table)
+library(RODBC)
 require(dplyr)
 
 
-# Corp History 
+
 conn <- odbcDriverConnect('DRIVER={SQL Server};SERVER=researchdb;DATABASE=ebs_RESEARCH;Trusted Connection=true;Integrated Security=true;')
-cph = data.table(sqlQuery(conn,"Select TOP 100 * FROM ebs_FACTORY.eve.corporationHistory"))
-
-cph %>% colnames(.)
 
 
-# Potential proxy here for "battle field" stressors
-bsl = c(43:52,83:106) # Damage from, Combat Deaths
-colnames(cph)[bsl]
 
-# 
+mail = sqlQuery(conn,"select top 2000 *
+FROM ebs_RESEARCH.mail.messages m
+WHERE title LIKE '%recruit%'
+order BY m.messageID desc")
+
+head(mail)
+
+mail$sentDate
+
+
+txt = mail %>% select(body) %>% sample_n(10) %>% as.data.frame(.)
+txt[1,]
+gsub("<.*?>", " ", txt)
