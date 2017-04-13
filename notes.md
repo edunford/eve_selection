@@ -16,9 +16,11 @@ Following code renders important information about messages passed to recruits. 
 
 **IDEA**: scan recruitment adds to build a dictionary re: language relevant to recruitment.
 
-**IDEA**: <s>implement a necessary scope condition whereby you only examine NULL sec organizations.</s> The question is where a _relevant subset exists_. There is an argument that high sec organizations are lacking the same kinds of demands for coordination. Thus, the focus needs to be placed on low and null sec corps. Thus, a sample of corporations needs to be generated that (a) contains other human players, (b) operating in low/null sec, (c) has over 10 members _(or some other threshold of number of players)_ who are active, defining "active" as those who log on within 30 days of each other.
+**IDEA**: <s>implement a necessary scope condition whereby you only examine NULL sec organizations.</s> The question is where a _relevant subset exists_. There is an argument that high sec organizations are lacking the same kinds of demands for coordination. Thus, the focus needs to be placed on low and null sec corps. Thus, a sample of corporations needs to be generated that (a) contains other human players, (b) operating in low/null sec, (c) has over 10 members _(or some other threshold of number of players)_ who are active, defining "active" as those who log on within 30 days of each other. [Note that the activity information isn't retained as a time series, so it's difficult to ID the number of times an individuals logs on (outside of the character history tables)]
 
 The above extraction strategy will provide corporations that have members who actually play the game. To understand how individuals work in groups, there has to be some form of initial investment in the corporation.
+
+From here, I need to gather information about where corporations distribute their time by piecing together the jump logs.
 
 ## Recruitment applications
 
@@ -65,3 +67,5 @@ Eddi suggested reading www.varianceexplained.org. Useful uses of the PURR packag
 ## Auxiliary notes
 
 Pandemic Horde == `98388312`
+
+Useful [stack exchange article](http://stackoverflow.com/questions/5706437/whats-the-difference-between-inner-join-left-join-right-join-and-full-join) on joins in SQL.

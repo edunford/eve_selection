@@ -1,5 +1,7 @@
 
-declare @counterDate date = '2017-04-11'
+IF OBJECT_ID('tempdb..#events') IS NOT NULL DROP TABLE #events
+declare @counterDate1 date = '2017-04-11'
+declare @counterDate2 date = '2017-04-12'
 CREATE TABLE #events (ownerID bigint, fromCharID bigint, corporationID bigint, status_ int)
 
 INSERT INTO #events (ownerID, fromCharID, corporationID, status_)
@@ -7,9 +9,10 @@ EXEC hadoop.hive.query '
 SELECT ownerID, fromCharID, corporationID, status_
   FROM eventLogs_all a
 LATERAL VIEW json_tuple(a.value, "eventName", "ownerID", "fromCharID", "corporationID", "status") b AS eventName, ownerID, fromCharID, corporationID, status_
- WHERE dt = @date1 AND eventName = "corporation::InsertApplication"',@counterDate
+ WHERE dt between @date1 AND @date2 AND eventName = "corporation::InsertApplication"',@counterDate1, @counterDate2
 
 go
+
 
 
 declare @counterDate date = '2017-04-11'
@@ -30,4 +33,23 @@ declare @counterDate date = '2017-04-11'
 		left join ebs_WAREHOUSE.owner.dimCorporationVx owncorp_prior on owncorp_prior.corporationID = charscd.corporationID
 
 
+select count(*) from #events where status_ = 0
 
+
+
+-- my own take on this 
+select * from hadoop.samples.eventLogs_corpRecruitment__ApplyToJoin
+select * from hadoop.samples.eventLogs_corporation__InsertApplication
+select * from hadoop.samples.eventLogs_corporation__UpdateApplicationOffer
+
+
+IF OBJECT_ID('tempdb..#events2') IS NOT NULL DROP TABLE #events2
+declare @counterDate date = '2017-04-01'
+CREATE TABLE #events2 (eventDateTime date, ownerID bigint, fromCharID bigint, corporationID bigint, status_ int)
+
+INSERT INTO #events2 (eventDateTime,ownerID, fromCharID, corporationID, status_)
+EXEC hadoop.hive.query '
+SELECT ownerID, fromCharID, corporationID, status_
+  FROM eventLogs_all a
+LATERAL VIEW json_tuple(a.value, "eventName", "eventDateTime", "ownerID", "fromCharID", "corporationID", "status") b AS eventName, eventDateTime, ownerID, fromCharID, corporationID, status_
+ WHERE dt >= @date1 AND eventName = "corporation::InsertApplication"',@counterDate

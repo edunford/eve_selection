@@ -128,7 +128,7 @@ select * from #corpRec where characterID = 219987026
 
 
 
--- new strategy: focus on recruitment processes within NULL sec corporations. 
+
 
 
 
