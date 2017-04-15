@@ -24,4 +24,6 @@ mail$sentDate
 
 txt = mail %>% select(body) %>% sample_n(10) %>% as.data.frame(.)
 txt[1,]
-gsub("<.*?>", " ", txt)
+parse <- function(x) gsub("<.*?>", " ", x)
+
+apply(txt,1,parse)

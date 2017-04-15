@@ -1,3 +1,5 @@
+library(revemetrics)
+library(dplyr)
 character.sample <- 
   "select top 100 characterID
   	from ebs_WAREHOUSE.customer.dimUser u

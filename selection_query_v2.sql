@@ -44,12 +44,16 @@ select * from hadoop.samples.eventLogs_corporation__UpdateApplicationOffer
 
 
 IF OBJECT_ID('tempdb..#events2') IS NOT NULL DROP TABLE #events2
-declare @counterDate date = '2017-04-01'
-CREATE TABLE #events2 (eventDateTime date, ownerID bigint, fromCharID bigint, corporationID bigint, status_ int)
+CREATE TABLE #events2 (ownerID bigint, eventDateTime date, fromCharID bigint, corporationID bigint, status_ int)
 
-INSERT INTO #events2 (eventDateTime,ownerID, fromCharID, corporationID, status_)
+
+INSERT INTO #events2 (eventDateTime, ownerID, fromCharID, corporationID, status_)
+declare @counterDate date = '2017-04-01';
 EXEC hadoop.hive.query '
-SELECT ownerID, fromCharID, corporationID, status_
+SELECT eventDateTime, ownerID, fromCharID, corporationID, status_
   FROM eventLogs_all a
-LATERAL VIEW json_tuple(a.value, "eventName", "eventDateTime", "ownerID", "fromCharID", "corporationID", "status") b AS eventName, eventDateTime, ownerID, fromCharID, corporationID, status_
- WHERE dt >= @date1 AND eventName = "corporation::InsertApplication"',@counterDate
+LATERAL VIEW json_tuple(a.value, "eventDateTime" ,"eventName", "ownerID", "fromCharID", "corporationID", "status") b AS eventDateTime, eventName, ownerID, fromCharID, corporationID, status_
+ WHERE dt = @date1 AND eventName = "corporation::InsertApplication"',@counterDate
+
+
+ select* from #events2
