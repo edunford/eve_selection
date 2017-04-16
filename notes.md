@@ -60,12 +60,14 @@ http://evemetrics/Report?counterID=1411 is a fantastic internal site with time s
 
 We installed `devart`, which is an SQL assistant that helps code complete when using SQL. It plugs and plays with the SQL clients.
 
-Eddi suggested reading www.varianceexplained.org. Useful uses of the PURR package.
+Eddi suggested reading (varianceexplained)[http://varianceexplained.org/]. Useful uses of the `PURR` package.
 
 ----------------------------------------------------------------
 
 ## Auxiliary notes
 
-Pandemic Horde == `98388312`
+Pandemic Horde == `98388312` (this is a major noobie corp with high membership)
 
 Useful [stack exchange article](http://stackoverflow.com/questions/5706437/whats-the-difference-between-inner-join-left-join-right-join-and-full-join) on joins in SQL.
+
+The **event logs** are moving. Tracking the date range of logs today (04-16-2017), the logs ranged from a **_min: 2016-12-29 to max: 2017-04-16_**). This generates major issues for how **coordination networks** are constructed. As one needs a clear jump record of all corp members to construct spatio-temporal adjacency matrices.  

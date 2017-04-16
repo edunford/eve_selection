@@ -81,11 +81,11 @@ with jumpRec as (
 	group by month(historyDate)+'-'+year(historyDate)+'-'+corporationID
 ) select 
 max(corporationID) as corporationID,
-AVG(jr.propHighSec) as propHighSec,
-AVG(jr.propLowSec) as propLowSec,
-AVG(jr.propNullSec) as propNullSec,
-AVG(jr.propWormhole) as propWormhole,
-AVG(jr.totalJumps) as aveMonthlyTotalJumps
+iif(AVG(jr.propHighSec) is null,0,AVG(jr.propHighSec)) as propHighSec,
+iif(AVG(jr.propLowSec) is null,0,AVG(jr.propLowSec)) as propLowSec,
+iif(AVG(jr.propNullSec) is null,0,AVG(jr.propNullSec)) as propNullSec,
+iif(AVG(jr.propWormhole) is null,0,AVG(jr.propWormhole)) as propWormhole,
+iif(AVG(jr.totalJumps) is null,0,AVG(jr.totalJumps)) as aveMonthlyTotalJumps
 from jumpRec jr
 group by corporationID
 

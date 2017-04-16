@@ -1,5 +1,5 @@
--- Generating a Sample of corps that (a) contain humans (min of five unique players) and (b) are not dust corps
--- [Further Distinctions can be made re: low/high sec activity]
+-- Generating a Sample of corps that (a) contain humans (min of five unique players), (b) are not dust corps, 
+-- and (c) operate in low/Null sec (and wormholes) at least 50% of the time (as determined be where they jump on average)
 
 IF OBJECT_ID('tempdb..#corpRec') IS NOT NULL DROP TABLE #corpRec
 select
@@ -80,14 +80,11 @@ from #corpRec c inner join corpSample cc on cc.corporationID2 = c.corporationID
 			--select max(distinctUsers) as max, min(distinctUsers) as min from #corpRec2 -- Max No. of members: 24,976 and a Min No. of Members: 5
 
 
-select top 100* from #corpRec2
+select top 10* from #corpRec2
 
 
--- let's subset out all corporations that do not spend the majority of their time in low/null space.
--- we can do this by constructing a meta statistic of the average proportion of jumps by each corp within
--- the relevant timespan. 
 
--- (1) subset the character history logs to only deal with the relevant corporations (This took way too long)
+		-- (1) subset the character history logs to only deal with the relevant corporations (This took way too long)
 			--IF OBJECT_ID('tempdb..#histRelCorps') IS NOT NULL DROP TABLE #histRelCorps;
 			--with sub as ( 
 			--	select
@@ -154,5 +151,13 @@ left join #corpJumpRec cjr on cjr.corporationID = cr.corporationID
 			 --select count(*) from #corpRec3
 			 ---- No loss
 
-			 --select top 10* from #corpRec3
+			 --select count(distinct corporationID) from #corpRec3 where propNullSec >= .5 -- 1329 corps that spend 50%+ in Nullsec
+			 --select count(distinct corporationID) from #corpRec3 where propLowSec >= .5 -- 228 corps that spend 50%+ in Lowsec
+			 --select count(distinct corporationID) from #corpRec3 where propWormhole >= .5 -- 58 corps that spend 50%+ in Wormholes
+			 --select count(distinct corporationID) from #corpRec3 where propHighSec >= .5 -- 10,527 (vast majority) spend most of their time in high sec
+			 --select count(distinct corporationID) from #corpRec3 where propHighSec < .5  -- 5194 corps spend less than 50% of their time in High sec on ave.
+			 --select count(distinct corporationID) from #corpRec3 where aveMonthlyTotalJumps = 0 -- 2717 corps inactive.
 
+
+			 --select * from #corpRec3 -- let's save for later in R.
+			 select distinct corporationID from #corpRec3 where propNullSec >= .5
