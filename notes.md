@@ -22,11 +22,15 @@ The above extraction strategy will provide corporations that have members who ac
 
 From here, I need to gather information about where corporations distribute their time by piecing together the jump logs.
 
+Note that the **jump summaries** (i.e. which security zone a corp spends the majority of its time) appears off. There are corps in the jump log who report 0 activity who are clearly in the jump long (which means they're jumping and thus pointing to an error in the log).
+
 ## Recruitment applications
 
 - Records re: invitations and applications appear to extend back to Dec 9, 2014 -- so there are limitations re: which part of the time series corp data is extracted from.
 
+## Jump logs
 
+Extracting from the hadoop jump log is expensive and draws a lot of superfluous entries. Just for the week of April 1 - April 7, 2017 there was approximately 8.5 million jump records. However, after removing all non-relevant corporations (npc/dust/less than 5 human players), that number reduces to 2.2 million -- which would only further reduce if one were to use a sample rather than the population. A key question is: can we subset the records _while_ drawing them from the hadoop?
 
 
 ----------------------------------------------------------------
@@ -71,3 +75,5 @@ Pandemic Horde == `98388312` (this is a major noobie corp with high membership)
 Useful [stack exchange article](http://stackoverflow.com/questions/5706437/whats-the-difference-between-inner-join-left-join-right-join-and-full-join) on joins in SQL.
 
 The **event logs** are moving. Tracking the date range of logs today (04-16-2017), the logs ranged from a **_min: 2016-12-29 to max: 2017-04-16_**). This generates major issues for how **coordination networks** are constructed. As one needs a clear jump record of all corp members to construct spatio-temporal adjacency matrices.  
+
+Check out the external [recruitment process website](https://recruit.karmafleet.org/) for **karmafleet**
