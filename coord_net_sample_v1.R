@@ -125,13 +125,113 @@ load("~/ETD/selection/data/april_1_7_rel_jump_logs.Rdata")
                 vertex.label="")
     
     
+  # The above method works, but grows quadratically which means the iterations 
+  # becomes impossibly large as the size of the network increases. Let's hash by
+  # time ordering the matrix. Here we only need to process small bits of the
+  # object as we iterate through each hash. 
+    
+    
+    
+    
+    
+    
+    
+    
+    
 # With the method d?efined, let's try it out on a big corp with a lot of
 # interactions.
     
     # Pandemic Horde (98388312)
+    98473114
+    # Time order and reduce redundancies. 
     S = jump_logs %>% filter(corporationID==98388312) %>% 
-      select(eventDate,destinationID,userID) %>% as.data.frame
+      select(eventDate,destinationID,userID) %>% 
+      arrange(eventDate,destinationID) %>% 
+      distinct(.) %>% group_by(eventDate,destinationID) %>% 
+      mutate(n=n())  %>% filter(n > 1) %>% ungroup %>% 
+      select(-n) %>% as.data.frame
+    
+    S$hash = S %>% group_indices(eventDate,destinationID)
+    S$pos = 1:nrow(S)
+    tmp = S
+    for(c in 1:ncol(S)){
+      if(!is.numeric(S[,c])){
+        if(class(S[,c]) %in% c("character","factor")){
+          S[,c] = as.numeric(as.factor(S[,c]))
+        }
+        if(class(S[,c])=="Date"){
+          S[,c] = as.numeric(S[,c])
+        }
+      }
+    }
+    
+    S = as.matrix(S)
+    
+    gather = c()
+    hash = unique(S[,4])
+    pb = progress_estimated(length(hash))
+    tin = Sys.time()
+    for(h in hash){
+      pos = S[S[,4]==h,5][1]
+      loc = hashdyadLT(S,S[,4]==h,pos)
+      hold = data.frame(date=tmp[loc[,1],1],user1=tmp[loc[,1],3],user2=tmp[loc[,2],3],stringsAsFactors = T)
+      gather = unique(rbind(gather,hold))
+      pb$tick()$print()
+    }
+    tout = Sys.time() - tin
     
     
+    
+    # 2.89 min when 691
+    # 1.89 min when 624
+    # 31.5 secs when 469
+    # 2.22 secs when 296
+    # .006 secs when 50
+    
+    plot(y=c(.006,2.22,31.5,113.4,173.4),
+         x=c(50,296,469,624,691),xlim=c(0,700),
+         ylim=c(0,200),type="b",
+         main="Members and Time",ylab="Time (Seconds)",
+         xlab="Corp Members")
+    
+    y=c(.006,2.22,31.5,113.4,173.4)
+    x=c(50,296,469,624,691)
+    
+    model = lm(y~x+I(x^2))
+    b = coefficients(model)
+    predtime = function(x){(b[[1]]+x*b[[2]]+(x^2)*b[[3]])}
+    predtime(200)
+    
+    pos = S[S[,4]==1135,5][1]
+    t = Sys.time()
+    test = hashdyadLT(S,S[,4]==1135,pos)[-1,]
+    t2 = Sys.time() - t
+    t2
+    
+   
+    pos = S[S[,4]==168,5][1]
+    t3 = Sys.time()
+    test1 = hashdyad(S,S[,4]==168,pos)[-1,]
+    t4 = Sys.time() - t3
+    t4
+    
+    pos = S[S[,4]==168,5][1]
+    t5 = Sys.time()
+    test2 = hashdyadLT(S,S[,4]==168,pos)
+    t6 = Sys.time() - t5
+    t6
+    
+    all(test1 == test2)
+    
+    
+    loc[,1]
+    
+    
+    tmp %>% group_by(hash) %>% tally() %>% arrange(desc(n)) # larges potential configuration
+    
+    tmp %>% group_by(hash) %>% tally() %>% arrange(desc(n)) %>% filter(n<=50)
+    
+    
+
     
     

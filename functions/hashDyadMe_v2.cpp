@@ -4,10 +4,10 @@ using namespace Rcpp;
 using namespace arma;
 
 //[[Rcpp::export]]
-mat hashdyad2(NumericMatrix data, arma::vec hash) {
+mat hashdyad2(NumericMatrix data, arma::vec hash) {// doesn't work
   int hash_len = hash.size();
   arma::mat temp = arma::zeros(1,2);
-  for(int h = 0; h < hash_len; ++h){
+  for(int h = 1; h < hash_len; ++h){
     arma::vec tmp_bool = hash==h;
     //subset input numeric mat by hash
     mat Xmat(data.begin(), data.nrow(), data.ncol(), false);

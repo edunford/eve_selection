@@ -1,6 +1,5 @@
 -- comparing the hadoop application record to the recorded one
 
-
 -- HADOOP TABLE
 		IF OBJECT_ID('tempdb..#apps') IS NOT NULL DROP TABLE #apps
 		CREATE TABLE #apps (eventDate date, corporationID bigint, receiverID bigint, senderID bigint, status_ int)
@@ -13,7 +12,6 @@
 		LATERAL VIEW json_tuple(a.value, "eventName", "dateTime", "corporationID", "ownerID", "fromCharID", "status") b AS eventName, date, corporationID, receiverID, senderID, status_
 		 WHERE dt between @date1 AND @date2 AND eventName = "corporation::InsertApplication"',@counterDate1, @counterDate2
 
-		select top 100* from #apps
 		
 	-- range
 		select min(eventDate) as minDate, max(eventDate) as maxDate from #apps

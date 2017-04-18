@@ -80,9 +80,6 @@ from #corpRec c inner join corpSample cc on cc.corporationID2 = c.corporationID
 			--select max(distinctUsers) as max, min(distinctUsers) as min from #corpRec2 -- Max No. of members: 24,976 and a Min No. of Members: 5
 
 
-select top 10* from #corpRec2
-
-
 
 		-- (1) subset the character history logs to only deal with the relevant corporations (This took way too long)
 			--IF OBJECT_ID('tempdb..#histRelCorps') IS NOT NULL DROP TABLE #histRelCorps;
@@ -160,4 +157,8 @@ left join #corpJumpRec cjr on cjr.corporationID = cr.corporationID
 
 
 			 --select * from #corpRec3 -- let's save for later in R.
-			 select distinct corporationID from #corpRec3 where propNullSec >= .5
+			 --select distinct corporationID from #corpRec3 where propNullSec >= .5
+
+
+
+			 select top 100* from #corpRec3

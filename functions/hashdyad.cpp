@@ -4,7 +4,7 @@ using namespace Rcpp;
 using namespace arma;
 
 //[[Rcpp::export]]
-mat hashdyad(NumericMatrix data, NumericVector hash) {
+mat hashdyad(NumericMatrix data, NumericVector hash, int pos) {
   //subset input numeric mat by hash
   mat Xmat(data.begin(), data.nrow(), data.ncol(), false);
   colvec tIdx(hash.begin(), hash.size(), false); 
@@ -15,8 +15,8 @@ mat hashdyad(NumericMatrix data, NumericVector hash) {
   for( int i = 0; i < len; ++i){
     for( int j = 0; j < len; ++j){
       if((sub(i,0) == sub(j,0)) && (sub(i,1) == sub(j,1)) && (i != j) && ( i<j) && (sub(i,2) != sub(j,2))){
-        col_i(0,0) = i+1;
-        col_i(0,1) = j+1;
+        col_i(0,0) = (pos+i);
+        col_i(0,1) = (pos+j);
         temp = join_cols(temp,col_i);
       }
     }

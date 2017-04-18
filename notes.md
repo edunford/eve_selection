@@ -28,9 +28,15 @@ Note that the **jump summaries** (i.e. which security zone a corp spends the maj
 
 - Records re: invitations and applications appear to extend back to Dec 9, 2014 -- so there are limitations re: which part of the time series corp data is extracted from.
 
+- We have the capacity to write to permanent tables now using `edvald_research.umd` --- meaning we can back track and save the application records (including invite and application information from the hadoop). This will allow for a precise time series of this information.
+
 ## Jump logs
 
-Extracting from the hadoop jump log is expensive and draws a lot of superfluous entries. Just for the week of April 1 - April 7, 2017 there was approximately 8.5 million jump records. However, after removing all non-relevant corporations (npc/dust/less than 5 human players), that number reduces to 2.2 million -- which would only further reduce if one were to use a sample rather than the population. A key question is: can we subset the records _while_ drawing them from the hadoop?
+- Extracting from the hadoop jump log is expensive and draws a lot of superfluous entries. Just for the week of April 1 - April 7, 2017 there was approximately 8.5 million jump records. However, after removing all non-relevant corporations (npc/dust/less than 5 human players), that number reduces to 2.2 million -- which would only further reduce if one were to use a sample rather than the population. A key question is: can we subset the records _while_ drawing them from the hadoop?
+
+- **Note that the event logs are archived in** `ebs_ARCHIVE`. These logs retain a thorough time series of all player activity in the game.  
+
+- Daily hashes can still be too big for larger corporations. Need to further parse the interaction networks into _half_ or _quarter_ days.
 
 
 ----------------------------------------------------------------
