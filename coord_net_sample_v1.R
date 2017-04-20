@@ -40,6 +40,9 @@ load("~/ETD/selection/data/april_1_7_rel_jump_logs.Rdata")
       summarize(N_chars =n_distinct(userID),N=n()) %>%
       arrange(desc(N_chars)) # number of distinct characters and activity
 
+    jump_logs %>% group_by(corporationID) %>% 
+      summarize(N_chars =n_distinct(userID),N=n()) %>% filter(N_chars<=500) %>%
+      arrange(desc(N_chars))
     
 # Building interaction Networks-------------
     
@@ -180,6 +183,28 @@ load("~/ETD/selection/data/april_1_7_rel_jump_logs.Rdata")
     }
     tout = Sys.time() - tin
     
+    head(gather)
+    EM = gather %>% filter(date=='2017-04-01') %>% select(user1,user2) %>% as.matrix();colnames(EM) = NULL
+    actors = unique(c(gather$user1,gather$user2))
+    net <- graph_from_data_frame(EM,actors,directed=F)
+    net <- simplify(net)
+    
+    pdf(file="~/ETD/selection/code/figures/pand_horde_net.pdf",height=8,width=8)
+    plot.igraph(net,vertex.color="steelblue",vertex.frame.color="white",
+                edge.color="grey",edge.width=2,vertex.size=4,
+                vertex.label="",main="Pandemic Horde")
+    dev.off()
+    
+    
+    # 
+    
+    
+    
+    
+    
+    
+    
+  # Getting a feel for the algorithm time 
     
     
     # 2.89 min when 691
@@ -229,7 +254,7 @@ load("~/ETD/selection/data/april_1_7_rel_jump_logs.Rdata")
     
     tmp %>% group_by(hash) %>% tally() %>% arrange(desc(n)) # larges potential configuration
     
-    tmp %>% group_by(hash) %>% tally() %>% arrange(desc(n)) %>% filter(n<=50)
+    tmp %>% group_by(hash) %>% tally() %>% arrange(desc(n)) %>% filter(n<=200)
     
     
 

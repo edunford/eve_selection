@@ -1,0 +1,17 @@
+.reveal section img {border:none; } 
+.reveal pre {
+    line-height: 1em;
+}
+
+.reveal pre code {font-size: 0.6em;}
+
+
+.reveal .tiny {font-size: 20px; margin:0px; }
+
+a:link {color:dodgerblue;}
+a:visited {color:dodgerblue;}
+
+.white {color: #f0f0f0;}
+
+.reveal .white h1 {color: #f0f0f0;}
+.highlight {color: dodgerblue;}

@@ -6,8 +6,8 @@ use edvald_research
 -- create table umd.corporationApps (eventDate date, corporationID bigint, receiverID bigint, senderID bigint, status tinyint)
 
 -- HADOOP TABLE
-		declare @counterDate1 date = '2016-10-01';
-		declare @counterDate2 date = '2016-10-31';
+		declare @counterDate1 date = '2015-12-01';
+		declare @counterDate2 date = '2016-04-30';
 		INSERT INTO umd.corporationApps (eventDate, corporationid, receiverid, senderid, status)
 		EXEC hadoop.hive.query '
 		SELECT date as eventDate, corporationID, receiverID, senderID, status_
@@ -16,7 +16,7 @@ use edvald_research
 		 WHERE dt between @date1 AND @date2 AND eventName = "corporation::InsertApplication"',@counterDate1, @counterDate2
 
 
-select * from umd.corporationApps
+select count(*) from umd.corporationApps
 
 -- track progress
 select eventDate, count(*) as total, sum(iif(status = 8, 1, 0)) as invites,sum(iif(status = 0, 1, 0)) as applied

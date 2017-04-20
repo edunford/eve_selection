@@ -38,6 +38,16 @@ Note that the **jump summaries** (i.e. which security zone a corp spends the maj
 
 - Daily hashes can still be too big for larger corporations. Need to further parse the interaction networks into _half_ or _quarter_ days.
 
+## Fleets "Warp To"
+
+- K. noted that jumps (especially jumps aggregated to the day) likely aren't capturing cohesion. Think of it like this: everyone might go to the store each day (which would be recorded as a tie) but it doesn't mean that they are "together" or that they know each other. Rather, K. suggestion using the "warp to" feature in a fleet, where a member of a fleet can warp to a specific player in that fleet. K. noted that in his corp it's a requirement to join the (only) fleet whenever you log on. That way it's easier to help the team when in need. A "warp to" would always be a gesture of coordination.
+
+- Also, fleet and squad leaders have the capacity to warp the entire fleet, which means that you can recover group wars.
+
+- These records exist and appear to do the trick. They are located in the hadoop, so they'll require a map-reduction.
+
+      select * from hadoop.samples.eventLogs_park__Warp_Char
+
 
 ----------------------------------------------------------------
 
@@ -62,15 +72,49 @@ where in the above chunk "war_IX" is the temp table being indexed.
 
 ### Meeting with Eddi
 
-Customerid IS VOLATILE  use user email or userID as a unique ID
+- `Customerid` IS VOLATILE  use **user email** or **userID** as a unique ID
 
-use `isPrimary` on player account email to get rid of alt accounts which will be `ebs_WAREHOUSE.customer.dimUser`
+- Use `isPrimary` on player account email to get rid of alt accounts which will be `ebs_WAREHOUSE.customer.dimUser`
 
-http://evemetrics/Report?counterID=1411 is a fantastic internal site with time series and SQL information query guidance for the entire EVE data base. Eddi uses this sounce primarily for his data exploration of new sources. Note that Eddi also built an R package that streamlines much of the SQL set up in R for extracting from the EVE database.
+- http://evemetrics/Report?counterID=1411 is a fantastic internal site with time series and SQL information query guidance for the entire EVE data base. Eddi uses this sounce primarily for his data exploration of new sources. Note that Eddi also built an R package that streamlines much of the SQL set up in R for extracting from the EVE database.
 
-We installed `devart`, which is an SQL assistant that helps code complete when using SQL. It plugs and plays with the SQL clients.
+- We installed `devart`, which is an SQL assistant that helps code complete when using SQL. It plugs and plays with the SQL clients.
 
-Eddi suggested reading (varianceexplained)[http://varianceexplained.org/]. Useful uses of the `PURR` package.
+- Eddi suggested reading (varianceexplained)[http://varianceexplained.org/]. Useful uses of the `PURR` package.
+
+### Map Reduce (for querying Hadoop)
+
+Eddi walked through using map reduce to grab larger jobs from the cluster. Very effective. Here is the command prompt that he ran after we walked we set up the mapper function
+
+      python doob.py --mapper corpApplications.py --date 2017.04.01-2017.04.18 --output corpApplications
+
+with `corpApplications.py` taking the following form:
+
+      import collections
+      import doobutil
+      from doobutil import PrintSimpleKeyVals
+      def mapper():
+          for e in doobutil.ReadInputEvent(quickFilter="corporation::InsertApplication"):
+               print("%s\t%s\t%s\t%s\t%s" % (e.dt[:10], e.corpID, e.charID, e.fromCharID, e.status))
+      mapper()
+
+The working directory is the `/c/hadoop` folder.
+
+Finally, the following code can be used to parse and load the files into a SQL table.
+
+        # Under: F:\depot\eventLog\RELEASE\hadoop\
+        # python doob.py --mapper regionImportExportMapper.py --reducer countReducer.py --output importsExports --date 2016.03.01-2016.03.31 # run the query
+        # cd importsExports_edvald
+        #
+        # sed 's/\t/,/g' importsExports_edvald.txt > importsExports_edvald.csv
+        # bcp tmp.importsExports in importsExports_edvald.csv -S researchdb -d edvald_research -T -c -t
+
+So for me, this would look like
+
+        python doob.py --mapper corpApplications.py --date 2017.04.01-2017.04.18 --output corpApplications
+
+        sed 's/\t/,/g' corpApplications_se.david.txt > ~/Documents/ETD/selection/data/importsExports/cropApplications.csv
+
 
 ----------------------------------------------------------------
 

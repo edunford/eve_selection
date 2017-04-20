@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<!-- saved from url=(0100)file://edvald-pc/f$/perforce/researchanalytics/rprojects/Evesterdam2016/presentation.html#/section-6 -->
+<html class=" js no-mobile desktop no-ie chrome chrome57 f$-section perforce-section researchanalytics-section rprojects-section evesterdam2016-section gradient rgba opacity textshadow multiplebgs boxshadow borderimage borderradius cssreflections csstransforms csstransitions no-touch no-retina fontface domloaded w-1920 gt-240 gt-320 gt-480 gt-640 gt-768 gt-800 gt-1024 gt-1280 gt-1440 gt-1680 no-portrait landscape" id="presentation-page"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="./presentation_w_expl_of_map_reduce_files/reveal.css">
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="./presentation_w_expl_of_map_reduce_files/sky.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <link rel="stylesheet" href="./presentation_w_expl_of_map_reduce_files/styles.css">
+    <link rel="stylesheet" href="./presentation_w_expl_of_map_reduce_files/font-awesome.min.css">
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'presentation_files/reveal.js-3.3.0/css/print/pdf.css' : 'presentation_files/reveal.js-3.3.0/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script><link rel="stylesheet" type="text/css" href="./presentation_w_expl_of_map_reduce_files/paper.css">
+    <!--[if lt IE 9]>
+    <script src="presentation_files/reveal.js-3.3.0/lib/js/html5shiv.js"></script>
+    <![endif]--><script type="text/javascript" src="./presentation_w_expl_of_map_reduce_files/zoom.js.download"></script>
+
+<script type="text/javascript" src="./presentation_w_expl_of_map_reduce_files/MathJax.js.download"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body style="transition: -webkit-transform 0.8s ease;"><div id="MathJax_Message" style="display: none;"></div>
+  <div class="reveal default center" role="application" data-transition-speed="default" data-background-transition="default">
+    <div class="slides" style="width: 960px; height: 700px; zoom: 1.18929;">
+
+
+<section id="section" class="slide level2 white has-dark-background past" data-background="#000000" style="top: 157px; display: none;" hidden="" aria-hidden="true">
+<h1></h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/evesterdam.png"></p>
+<p><span class="tiny"> <i class="fa fa-twitter" style="color:dodgerblue"></i> <a href="https://twitter.com/CCPQuant">CCPQuant</a> | <i class="fa fa-linkedin-square" style="color:dodgerblue"></i><a href="https://is.linkedin.com/in/edvald">/in/edvald</a> </span></p>
+</section>
+<section id="agenda" class="slide level2 past" style="top: 184.5px; display: block;" hidden="" aria-hidden="true">
+<h1>Agenda</h1>
+<ul>
+<li class="fragment visible" data-fragment-index="0"><em>From raw event logs to pretty graphs</em></li>
+<li class="fragment visible" data-fragment-index="1">Data requests posted (twitter, facebook)</li>
+<li class="fragment visible" data-fragment-index="2">EVE Metrics (if time and wifi allows)</li>
+</ul>
+</section>
+<section id="section-1" class="slide level2 stack past" style="top: 0px; display: block;" data-previous-indexv="7" hidden="" aria-hidden="true">
+<h1></h1>
+<!-- Data -->
+<section data-background="images/evebg.jpg" data-background-image="images/evebg.jpg" style="top: 330px; display: none;" class="past" hidden="" aria-hidden="true">
+</section>
+<section class="past" style="top: 197px; display: none;" hidden="" aria-hidden="true">
+    <i class="fa fa-database fa-5x" style="color: #00a1e1;"></i>
+
+    <p>It all begins with data</p>
+</section>
+<section class="past" style="top: 166px; display: none;" hidden="" aria-hidden="true">
+    <h4>User data - State</h4>
+    <div class="fragment visible" data-fragment-index="0">
+    <p>
+        <small>The combined state of EVE Online is kept in an SQL Server database</small>
+    </p>
+    <p>
+        <small>Which currently is at 2.8<strong>TB</strong></small>
+    </p>
+    </div>
+    <div class="fragment visible" data-fragment-index="1">
+    <p>
+        <small>With the largest tables regularly truncated and arcived for performance reasons</small>
+    </p>
+    <p>
+        <small>Archive DB currently at 4.5<strong>TB</strong></small>
+    </p>
+    </div>
+</section>
+<section data-transition="fade" class="past" style="top: 32.5px; display: none;" hidden="" aria-hidden="true">
+    <h4>User data - Logs</h4>
+
+    <p>
+        <small>around ~300 Million lines of log records are generated each day</small>
+    </p>
+    <img src="./presentation_w_expl_of_map_reduce_files/loglines_daily.png">
+</section>
+<section data-transition="fade" class="past" style="top: 32.5px; display: none;" hidden="" aria-hidden="true">
+    <h4>User data - Logs</h4>
+
+    <p>
+        <small>~50GB of uncompressed data</small>
+    </p>
+    <img src="./presentation_w_expl_of_map_reduce_files/logamount_daily.png">
+
+</section>
+<section data-transition="fade" class="past" style="top: 32.5px; display: none;" hidden="" aria-hidden="true">
+    <h4>User data - Logs</h4>
+
+    <p>
+        <small>weekends vs. weekdays</small>
+    </p>
+    <img src="./presentation_w_expl_of_map_reduce_files/logamount_daily_wde.png">
+</section>
+<section data-transition="fade" class="past" style="top: 51.5px; display: block;" hidden="" aria-hidden="true">
+    <h4>User data - Logs</h4>
+
+    <p>
+        <small>weekends vs. weekdays</small>
+    </p>
+    <img src="./presentation_w_expl_of_map_reduce_files/logamount_wde_boxplot.png" width="400">
+</section>
+<section class="" style="top: 192px; display: block;" aria-hidden="true">
+    <h3>Accumulated: ~50 TB <i class="fa fa-file-archive-o"></i></h3>
+    <h5 class="fragment visible" data-fragment-index="0"><span style="color:#999">This is where</span> Hadoop <span style="color:#999">comes in</span></h5>
+
+    <p class="fragment visible" data-fragment-index="1">
+        <small>Map &amp; Reduce framework</small>
+    </p>
+
+    <p class="fragment visible" data-fragment-index="2">
+        <small>or <a href="https://hive.apache.org/">Hive</a>, which has an SQL-like syntax, called HQL that allows us to <i>query</i> the logs like any other database</small>
+    </p>
+</section>
+<section class="future" style="top: 263.5px; display: block;" hidden="" aria-hidden="true">
+    <h4>EVE Metrics</h4>
+
+    <p>
+        <small>On top of this, we have an in-house solution for storing aggregated results <br>from Hadoop and TQ
+        </small>
+    </p>
+</section>
+</section>
+<section class="stack present" style="top: 0px; display: block;" data-previous-indexv="11"><section id="case-pvp-damage" class="titleslide slide level1 white has-dark-background past" data-background="#202020" style="top: 277px; display: none;" hidden="" aria-hidden="true"><h1><span class="highlight">Case:</span> PVP Damage</h1></section><section id="overview" class="slide level2 past" style="top: 138px; display: none;" hidden="" aria-hidden="true">
+<h1>Overview</h1>
+<ul>
+<li class="fragment visible" data-fragment-index="0">In EVE, e.g.&nbsp;all PVP damage applied is aggregated and logged every 5 seconds into the text logs</li>
+<li class="fragment visible" data-fragment-index="1">In this example, we look at the entire October 2016 event log: <span class="highlight"><strong>7,538,262,443</strong></span> records!</li>
+<li class="fragment visible" data-fragment-index="2">Processing this on a 15 machine <em>Hadoop</em> cluster took <span class="highlight"><strong>8 minutes and 32 seconds</strong></span></li>
+</ul>
+</section><section id="event-definition" class="slide level2 past" style="top: 92px; display: none;" hidden="" aria-hidden="true">
+<h1>Event definition</h1>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python">{
+    ...   
+    <span class="co"># Repair events</span>
+    <span class="st">"dogma::Repair_Shield"</span>    : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"repairedShipID"</span>, <span class="st">"repairedShipTypeID"</span>, <span class="st">"repairedShipOwnerID"</span>, <span class="st">"repairedAttributeID"</span>, <span class="st">"repairingCharID"</span>, <span class="st">"repairingShipID"</span>, <span class="st">"repairingShipTypeID"</span>, <span class="st">"remoteRepair"</span>, <span class="st">"totalTicks"</span>, <span class="st">"totalAmount"</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"repairingModuleID:repairingModuleTypeID:ticks:amount:actualAmount..."</span>],
+    <span class="co">"dogma::Repair_Armor"</span>     : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"repairedShipID"</span>, <span class="st">"repairedShipTypeID"</span>, <span class="st">"repairedShipOwnerID"</span>, <span class="st">"repairedAttributeID"</span>, <span class="st">"repairingCharID"</span>, <span class="st">"repairingShipID"</span>, <span class="st">"repairingShipTypeID"</span>, <span class="st">"remoteRepair"</span>, <span class="st">"totalTicks"</span>, <span class="st">"totalAmount"</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"repairingModuleID:repairingModuleTypeID:ticks:amount:actualAmount..."</span>],
+    <span class="co">"dogma::Repair_Hull"</span>      : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"repairedShipID"</span>, <span class="st">"repairedShipTypeID"</span>, <span class="st">"repairedShipOwnerID"</span>, <span class="st">"repairedAttributeID"</span>, <span class="st">"repairingCharID"</span>, <span class="st">"repairingShipID"</span>, <span class="st">"repairingShipTypeID"</span>, <span class="st">"remoteRepair"</span>, <span class="st">"totalTicks"</span>, <span class="st">"totalAmount"</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"repairingModuleID:repairingModuleTypeID:ticks:amount:actualAmount..."</span>],
+    <span class="co">"dogma::Repair_Capacitor"</span> : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"repairedShipID"</span>, <span class="st">"repairedShipTypeID"</span>, <span class="st">"repairedShipOwnerID"</span>, <span class="st">"repairedAttributeID"</span>, <span class="st">"repairingCharID"</span>, <span class="st">"repairingShipID"</span>, <span class="st">"repairingShipTypeID"</span>, <span class="st">"remoteRepair"</span>, <span class="st">"totalTicks"</span>, <span class="st">"totalAmount"</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"repairingModuleID:repairingModuleTypeID:ticks:amount:actualAmount..."</span>],
+
+    <span class="co"># Damage events</span>
+    <span class="co">"dogma::Damaged_NPC"</span>            : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"shipID"</span>, <span class="st">"shipTypeID"</span>, <span class="st">"npcOwnerID"</span>, <span class="st">""</span>, <span class="st">""</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"moduleTypeID::numShots:damageSum..."</span>],
+    <span class="co">"dogma::Damaged_Player"</span>         : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"shipID"</span>, <span class="st">"shipTypeID"</span>, <span class="st">"attackerID"</span>, <span class="st">"attackerShipID"</span>, <span class="st">"attackerShipTypeID"</span>, <span class="st">"fullShieldHP"</span>, <span class="st">"fullArmorHP"</span>, <span class="st">"fullStructHP"</span>, <span class="st">"fullCapacitor"</span>, <span class="st">"shieldCharge"</span>, <span class="st">"armorDamage"</span>, <span class="st">"structDamage"</span>, <span class="st">"capacitorCharge"</span>, <span class="st">"moduleTypeID:chargeTypeID:numShots:damageSum..."</span>],
+
+    <span class="co"># Drone events</span>
+    <span class="co">"drone::CmdAbandonDrone"</span>        : [<span class="st">"charID"</span>, <span class="st">"solarSystemID"</span>, <span class="st">"shipID"</span>, <span class="st">"shipTypeID"</span>, <span class="st">"droneID:droneTypeID..."</span>],
+    ...
+}</code></pre></div>
+</section><section id="mapreduce" class="slide level2 past" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Map/Reduce</h1>
+<p><small style="margin:0">Map/Reduce on a cluster:</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/mapreduce_mapshuffle.png" alt="Mapreduce"></p>
+<p><small style="margin:0">Greatly simplified single-machine example (linux):</small></p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">&gt;</span> <span class="kw">cat</span> largefile.txt <span class="kw">|</span> <span class="kw">python</span> mapper.py <span class="kw">|</span> <span class="kw">python</span> reducer.py <span class="kw">&gt;</span> outfile.txt</code></pre></div>
+</section><section id="mapper" class="slide level2 past" style="top: 79.5px; display: none;" hidden="" aria-hidden="true">
+<h1>Mapper</h1>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Executed on many cores on many computers across a network</span>
+<span class="kw">def</span> mapper():
+    results <span class="op">=</span> collections.defaultdict(<span class="bu">int</span>)
+    <span class="co"># Read the input line by line</span>
+    <span class="cf">for</span> line <span class="op">in</span> sys.stdin: 
+        line <span class="op">=</span> line.split(<span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)
+        <span class="co"># Custom Event parser</span>
+        e <span class="op">=</span> Event(line, <span class="bu">filter</span><span class="op">=</span><span class="st">"dogma::Damaged_Player"</span>) 
+        <span class="co"># Only take valid events of this type</span>
+        <span class="cf">if</span> e <span class="op">is</span> <span class="va">None</span>:
+            <span class="cf">continue</span>
+        <span class="co"># Go through each moduleType|chargeType|numShots and sum up the damage (map)</span>
+        <span class="cf">for</span> l <span class="op">in</span> e.moduleTypeID_chargeTypeID_numShots_damageSum:
+            results[(e.solarSystemID, e.shipTypeID, e.attackerShipTypeID, l[<span class="dv">0</span>], l[<span class="dv">1</span>], l[<span class="dv">2</span>])] <span class="op">+=</span> <span class="bu">int</span>(l[<span class="dv">3</span>])
+
+    <span class="co"># Print mapper output for reducer to process further</span>
+    <span class="cf">for</span> key, val <span class="op">in</span> results.iteritems():
+        <span class="bu">print</span> <span class="st">"</span><span class="sc">%s</span><span class="ch">\t</span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (<span class="st">"|"</span>.join(key), val)</code></pre></div>
+</section><section id="reducer" class="slide level2 past" style="top: 89px; display: none;" hidden="" aria-hidden="true">
+<h1>Reducer</h1>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Executed on 1 machine unless mapper output is sorted so it can be split into multiple reducers</span>
+<span class="kw">def</span> reducer():
+    countsByEvent <span class="op">=</span> collections.defaultdict(<span class="bu">int</span>)
+    <span class="co">#Read the input line by line</span>
+    <span class="cf">for</span> line <span class="op">in</span> sys.stdin:
+        line <span class="op">=</span> line.strip()
+        <span class="co"># From the mapper we know the lines from it are on a key\tvalue format</span>
+        c <span class="op">=</span> line.split(<span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)
+        <span class="co"># Further reduce the map output into final form</span>
+        countsByEvent[c[<span class="dv">0</span>]] <span class="op">+=</span> <span class="bu">int</span>(c[<span class="dv">1</span>])
+    
+    keys <span class="op">=</span> countsByEvent.keys()
+    keys.sort()
+    <span class="co"># Output</span>
+    <span class="cf">for</span> k <span class="op">in</span> keys:
+        k <span class="op">=</span> k.split(<span class="st">"|"</span>) <span class="op">+</span> countsByEvent[k]
+        <span class="bu">print</span>(<span class="st">"</span><span class="ch">\t</span><span class="st">"</span>.join(k))</code></pre></div>
+</section><section id="loading-dataset-into-r" class="slide level2 past" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Loading dataset into R</h1>
+<h4 id="mapreduce-reduced-damage-but-not-number-of-shots-its-easy-to-fix-that-in-r" class="tiny">Map/Reduce reduced damage, but not number of shots, it’s easy to fix that in R</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">damage &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="st">"data/pvpdamage.tsv"</span>,
+                   <span class="dt">col_names=</span><span class="kw">c</span>(<span class="st">"solarSystemID"</span>, <span class="st">"shipTypeID"</span>, <span class="st">"attackerShipTypeID"</span>, <span class="st">"moduleTypeID"</span>, <span class="st">"chargeTypeID"</span>, <span class="st">"numShots"</span>, <span class="st">"damage"</span>),
+                   <span class="dt">col_types=</span><span class="kw">cols</span>(<span class="dt">numShots =</span> <span class="kw">col_double</span>(), 
+                                  <span class="dt">damage =</span> <span class="kw">col_double</span>()),
+                   <span class="dt">na =</span> <span class="st">"None"</span>) %&gt;%
+<span class="st">  </span><span class="kw">group_by</span>(solarSystemID, shipTypeID, attackerShipTypeID, moduleTypeID, chargeTypeID) %&gt;%
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">numShots =</span> <span class="kw">sum</span>(numShots), 
+            <span class="dt">damage =</span> <span class="kw">sum</span>(damage)) %&gt;%
+<span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
+<h4 id="now-we-have-our-dataset" class="tiny">Now we have our dataset</h4>
+<pre><code>## # A tibble: 1,829,186 × 7
+##    solarSystemID shipTypeID attackerShipTypeID moduleTypeID chargeTypeID numShots damage
+##            &lt;int&gt;      &lt;int&gt;              &lt;int&gt;        &lt;int&gt;        &lt;int&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1       30000001        594              32876         8091          210        7   2633
+## 2       30000001        597                602        10631        24471        9   1096
+## 3       30000001        601                606         3640           NA        4      0
+## 4       30000001        602                597         2889        21924        8   2870
+## 5       30000001        603                630         2488           NA       18    390
+## 6       30000001        603                630         8027        27371        6   1215
+## 7       30000001        606              16240         7291          222        1    252
+## 8       30000001        626                626         2195           NA        6   2887
+## 9       30000001        626                626         2454           NA       15    672
+## 10      30000001        626                626         2464           NA        5    238
+## # ... with 1,829,176 more rows</code></pre>
+</section><section id="section-2" class="slide level2 past" style="top: 24px; display: none;" hidden="" aria-hidden="true">
+<h1></h1>
+<h4 id="i-can-then-use-join-to-resolve-the-typeids-into-names-for-easier-interpretation" class="tiny">I can then use join to resolve the typeID’s into names for easier interpretation</h4>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">damage.named &lt;-<span class="st"> </span>damage %&gt;%
+<span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">select</span>(inventory.types, typeID, <span class="dt">moduleType =</span> typeName, <span class="dt">moduleGroup =</span> groupName, <span class="dt">moduleCategory =</span> categoryName), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"moduleTypeID"</span> =<span class="st"> "typeID"</span>)) %&gt;%
+<span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">select</span>(inventory.types, typeID, <span class="dt">chargeType =</span> typeName, <span class="dt">chargeGroup =</span> groupName), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"chargeTypeID"</span> =<span class="st"> "typeID"</span>)) %&gt;%
+<span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">select</span>(inventory.types, typeID, <span class="dt">victimShipType =</span> typeName), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"shipTypeID"</span> =<span class="st"> "typeID"</span>)) %&gt;%
+<span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">select</span>(inventory.types, typeID, <span class="dt">attackerShipType =</span> typeName), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">"attackerShipTypeID"</span> =<span class="st"> "typeID"</span>)) %&gt;%
+<span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">select</span>(solarsystems, solarSystemID, <span class="dt">solarSystem =</span> solarSystemName, <span class="dt">region =</span> regionName), <span class="dt">by =</span> <span class="st">"solarSystemID"</span>) 
+
+damage.named</code></pre></div>
+<pre><code>## # A tibble: 1,089,013 × 16
+##    solarSystemID shipTypeID attackerShipTypeID moduleTypeID chargeTypeID numShots damage                                        moduleType
+##            &lt;int&gt;      &lt;int&gt;              &lt;int&gt;        &lt;int&gt;        &lt;int&gt;    &lt;dbl&gt;  &lt;dbl&gt;                                             &lt;chr&gt;
+## 1       30000001        594              32876         8091          210        7   2633              TE-2100 Ample Light Missile Launcher
+## 2       30000001        597                602        10631        24471        9   1096                                Rocket Launcher II
+## 3       30000001        602                597         2889        21924        8   2870                               200mm AutoCannon II
+## 4       30000001        603                630         8027        27371        6   1215 Prototype 'Arbalest' Rapid Light Missile Launcher
+## 5       30000001        606              16240         7291          222        1    252                           150mm Carbide Railgun I
+## 6       30000001        626                626         7287        22961        6   1739                         150mm Prototype Gauss Gun
+## 7       30000001        630                603          561          222        4    243                               75mm Gatling Rail I
+## 8       30000001       2175              17715        25715        20308        1    142                 Heavy Assault Missile Launcher II
+## 9       30000001       2205              33155         3520          254        5      0                              Heavy Pulse Laser II
+## 10      30000001      12005              17715         2410         2629       15    885                         Heavy Missile Launcher II
+## # ... with 1,089,003 more rows, and 8 more variables: moduleGroup &lt;chr&gt;, moduleCategory &lt;chr&gt;, chargeType &lt;chr&gt;, chargeGroup &lt;chr&gt;,
+## #   victimShipType &lt;chr&gt;, attackerShipType &lt;chr&gt;, solarSystem &lt;chr&gt;, region &lt;chr&gt;</code></pre>
+</section><section id="section-3" class="slide level2 past" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1></h1>
+<p><small>Make a variable called <code>damage_per_shot</code> variable and list the top ones</small></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">damage.named %&gt;%
+<span class="st">  </span><span class="co">#filter(moduleGroup == "Energy Weapon") %&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(moduleType, chargeType) %&gt;%
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">numShots =</span> <span class="kw">sum</span>(numShots),
+            <span class="dt">damage =</span> <span class="kw">sum</span>(damage)) %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">damage_per_shot =</span> damage /<span class="st"> </span>numShots) %&gt;%
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(damage_per_shot))</code></pre></div>
+<pre><code>## Source: local data frame [6,631 x 5]
+## Groups: moduleType [641]
+## 
+##                                  moduleType                          chargeType numShots   damage damage_per_shot
+##                                       &lt;chr&gt;                               &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;           &lt;dbl&gt;
+## 1             XL Cruise Missile Launcher II      Scourge Fury XL Cruise Missile        1 44042728        44042728
+## 2        CONCORD XL Cruise Missile Launcher         Nova Fury XL Cruise Missile        1 11796912        11796912
+## 3             XL Cruise Missile Launcher II Inferno Precision XL Cruise Missile        1 11372840        11372840
+## 4             XL Cruise Missile Launcher II Mjolnir Precision XL Cruise Missile        1  6020138         6020138
+## 5             XL Cruise Missile Launcher II      Inferno Fury XL Cruise Missile        8 46658754         5832344
+## 6  TE-2100 Ample XL Cruise Missile Launcher  Guristas Scourge XL Cruise Missile        1  5270263         5270263
+## 7      Afocal Precise Dual Giga Pulse Laser           Sanshas Multifrequency XL       12 42038329         3503194
+## 8         Limited Precise Ion Siege Blaster       Guristas Antimatter Charge XL        3 10229271         3409757
+## 9               CONCORD XL Torpedo Launcher                     Nova XL Torpedo        4 11907532         2976883
+## 10       CONCORD XL Cruise Missile Launcher      Scourge Fury XL Cruise Missile       17 50321997         2960117
+## # ... with 6,621 more rows</code></pre>
+<p><small>is the <code>numShots</code> variable unreliable?</small></p>
+</section><section id="section-4" class="slide level2 past" data-transition="fade" style="top: 0px; display: block;" hidden="" aria-hidden="true">
+<h1></h1>
+<p><small>Let’s plot <code>damage_per_shot</code> by the module powergrid requirement </small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-6-1.png" width="1152"></p>
+</section><section id="section-5" class="slide level2 past" data-transition="fade" style="top: 0px; display: block;" hidden="" aria-hidden="true">
+<h1></h1>
+<p><small>Let’s plot <code>damage_per_shot</code> by the module powergrid requirement <strong><em>log</em></strong> transformed </small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-7-1.png" width="1152"></p>
+</section><section id="section-6" class="slide level2 present" data-transition="fade" style="top: 0px; display: block;">
+<h1></h1>
+<p><small>Run simple K-means clustering on <code>powerGridRequired</code> to get turret size classes </small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-8-1.png" width="1152"></p>
+</section><section id="total-damage-by-module-and-class" class="slide level2 tiny future" style="top: 0.5px; display: block;" hidden="" aria-hidden="true">
+<h1>Total Damage by module and class</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-9-1.png" width="1632"></p>
+</section><section id="total-damage-by-module-group-and-region" class="slide level2 tiny future" style="top: 115px; display: block;" hidden="" aria-hidden="true">
+<h1>Total Damage % by module group and region</h1>
+<p><small>Showing only Top 20 Regions by damage</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-10-1.png" width="1344"></p>
+</section><section id="total-damage-by-module-group-and-region-1" class="slide level2 tiny future" style="top: 115.5px; display: none;" hidden="" aria-hidden="true">
+<h1>Total Damage % by module group and region</h1>
+<p><small>Showing only Top 20 Regions by damage</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-11-1.png" width="1344"></p>
+</section><section id="top-energy-crystals-by-class" class="slide level2 tiny future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Top <strong>Energy Crystals</strong> by Class</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-12-1.png" width="1632"></p>
+</section><section id="top-hybrid-ammo-by-class" class="slide level2 tiny future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Top <strong>Hybrid</strong> Ammo by Class</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-13-1.png" width="1632"></p>
+</section><section id="top-projectile-ammo-by-class" class="slide level2 tiny future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Top <strong>Projectile</strong> Ammo by Class</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-14-1.png" width="1632"></p>
+</section><section id="top-missiles-by-launcher-class" class="slide level2 tiny future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Top <strong>Missiles</strong> by Launcher Class</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-15-1.png" width="1632"></p>
+</section><section id="top-missiles-by-launcher-group" class="slide level2 tiny future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1>Top <strong>Missiles</strong> by Launcher Group</h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-16-1.png" width="1632"></p>
+</section><section id="section-7" class="slide level2 future" style="top: 0px; display: none;" hidden="" aria-hidden="true">
+<h1></h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-17-1.png" width="672"></p>
+</section></section>
+<section class="stack future" style="top: 0px; display: block;" data-previous-indexv="0" hidden="" aria-hidden="true"><section id="request-npc-bounties" class="titleslide slide level1 white has-dark-background" data-background="#202020" style="top: 277px; display: block;" aria-hidden="true"><h1><span class="highlight">Request:</span> NPC Bounties</h1></section><section id="section-8" class="slide level2 future" aria-hidden="true" style="top: 34px; display: block;" hidden="">
+<h1></h1>
+<p><img src="./presentation_w_expl_of_map_reduce_files/topsinksfaucets.png" alt="Bounties, Economic Report"></p>
+</section><section id="section-9" class="slide level2 future" data-transition="fade" aria-hidden="true" style="top: 29px; display: none;" hidden="">
+<h1></h1>
+<p><small>Zoom in on NPC Bounties this year alone</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-18-1.png" width="1152"></p>
+</section><section id="section-10" class="slide level2 future" data-transition="fade" aria-hidden="true" style="top: 330px; display: none;" hidden="">
+<h1></h1>
+<p><small>Top 5 Regions vs.&nbsp;rest</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-19-1.png" width="1152"></p>
+</section><section id="section-11" class="slide level2 future" aria-hidden="true" style="top: 330px; display: none;" hidden="">
+<h1></h1>
+<p><small>Absolute Change over time this year in daily bounties by region</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-20-1.png" width="1152"></p>
+</section><section id="section-12" class="slide level2 future" aria-hidden="true" style="top: 330px; display: none;" hidden="">
+<h1></h1>
+<p><small>% Change over time this year in daily bounties by region</small></p>
+<p><img src="./presentation_w_expl_of_map_reduce_files/unnamed-chunk-21-1.png" width="1152"></p>
+</section></section>
+    </div>
+  <div class="backgrounds"><div class="slide-background slide level2 white past" data-background-hash="#000000nullnullnullnullnullnullnullnull" data-loaded="true" style="background: rgb(0, 0, 0); display: none;"></div><div class="slide-background slide level2 past" data-loaded="true" style="display: block;"></div><div class="slide-background slide level2 stack past" data-loaded="true" style="display: block;"><div class="slide-background past" data-background-hash="images/evebg.jpgnullnullnullnullnullnullnullnull" data-loaded="true" style="display: none; background-image: url(&quot;images/evebg.jpg&quot;);"></div><div class="slide-background past" style="display: none;" data-loaded="true"></div><div class="slide-background past" style="display: none;" data-loaded="true"></div><div class="slide-background past" style="display: none;" data-loaded="true"></div><div class="slide-background past" style="display: none;" data-loaded="true"></div><div class="slide-background past" style="display: none;" data-loaded="true"></div><div class="slide-background past" style="display: block;" data-loaded="true"></div><div class="slide-background present" style="display: block;" data-loaded="true"></div><div class="slide-background future" style="display: block;" data-loaded="true"></div></div><div class="slide-background stack present" style="display: block;" data-loaded="true"><div class="slide-background titleslide slide level1 white past" data-background-hash="#202020nullnullnullnullnullnullnullnull" style="background: rgb(32, 32, 32); display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 past" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 present" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 tiny future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 future" style="display: none;" data-loaded="true"></div></div><div class="slide-background stack future" style="display: block;" data-loaded="true"><div class="slide-background titleslide slide level1 white present" data-background-hash="#202020nullnullnullnullnullnullnullnull" style="background: rgb(32, 32, 32); display: block;" data-loaded="true"></div><div class="slide-background slide level2 future" style="display: block;" data-loaded="true"></div><div class="slide-background slide level2 future" style="display: none;" data-loaded="true"></div><div class="slide-background slide level2 future" style="display: none;"></div><div class="slide-background slide level2 future" style="display: none;"></div><div class="slide-background slide level2 future" style="display: none;"></div></div></div><div class="progress" style="display: block;"><span style="width: 1141.62px;"></span></div><aside class="controls" style="display: block;"><button class="navigate-left enabled" aria-label="previous slide"></button><button class="navigate-right enabled" aria-label="next slide"></button><button class="navigate-up enabled" aria-label="above slide"></button><button class="navigate-down enabled" aria-label="below slide"></button></aside><div class="slide-number" style="display: block;"><span class="slide-number-a">4</span><span class="slide-number-delimiter">.</span><span class="slide-number-b">12</span></div><div class="speaker-notes" data-prevent-swipe=""></div><div class="pause-overlay"></div><div id="aria-status-div" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px 1px 1px 1px);">
+
+Run simple K-means clustering on powerGridRequired to get turret size classes 
+
+</div></div>
+
+  <script src="./presentation_w_expl_of_map_reduce_files/head.min.js.download"></script>
+  <script src="./presentation_w_expl_of_map_reduce_files/reveal.js.download"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Opens links in an iframe preview overlay
+        previewLinks: true,
+        // Transition style
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'presentation_files/reveal.js-3.3.0/plugin/zoom-js/zoom.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  
+
+</body></html>

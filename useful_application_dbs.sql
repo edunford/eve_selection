@@ -32,14 +32,14 @@ select * from ebs_RESEARCH.corporation.recruitmentTypesEx -- articulates languag
 select top 10* from ebs_RESEARCH.corporation.memberAutoKicks
 
 
-select top 10* from corporation.recruitmentTypes
+select top 10* from ebs_RESEARCH.corporation.recruitmentTypes
 select top 10* from vmsApplications order by created desc -- some form of internal application for volunteers/moderators in EVE
 
 
 -- activity log potentially contains information on applications
 select * from ebs_WAREHOUSE.owner.dimActivityType where activityGroup = 'Corporation' -- key for the event log
 select top 100* from ebs_RESEARCH.zevent.ownerEventsEx 
-select distinct eventTypeName from ebs_RESEARCH.zevent.ownerEventsEx 
+select distinct eventTypeName, eventTypeID from ebs_RESEARCH.zevent.ownerEventsEx 
 select top 100* from ebs_RESEARCH.zevent.ownerEventsEx  where eventTypeName = 'Join Corporation'
 select top 100* from ebs_RESEARCH.zevent.ownerEventsEx  where eventTypeID = 13 -- remove corp (exiting a corp)
 select top 100* from ebs_RESEARCH.zevent.ownerEventsEx  where eventTypeID = 383 -- not all pieces of the record are there...
