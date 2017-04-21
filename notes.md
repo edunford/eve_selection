@@ -111,6 +111,8 @@ Finally, the following code can be used to parse and load the files into a SQL t
 
 So for me, this would look like
 
+        cd ~/hadoop/RELASE/hadoop/
+
         python doob.py --mapper corpApplications.py --date 2017.04.01-2017.04.18 --output corpApplications
 
         sed 's/\t/,/g' corpApplications_se.david.txt > ~/Documents/ETD/selection/data/importsExports/cropApplications.csv
@@ -120,10 +122,63 @@ So for me, this would look like
 
 ## Auxiliary notes
 
-Pandemic Horde == `98388312` (this is a major noobie corp with high membership)
+- Pandemic Horde == `98388312` (this is a major noobie corp with high membership)
 
-Useful [stack exchange article](http://stackoverflow.com/questions/5706437/whats-the-difference-between-inner-join-left-join-right-join-and-full-join) on joins in SQL.
+- Useful [stack exchange article](http://stackoverflow.com/questions/5706437/whats-the-difference-between-inner-join-left-join-right-join-and-full-join) on joins in SQL.
 
-The **event logs** are moving. Tracking the date range of logs today (04-16-2017), the logs ranged from a **_min: 2016-12-29 to max: 2017-04-16_**). This generates major issues for how **coordination networks** are constructed. As one needs a clear jump record of all corp members to construct spatio-temporal adjacency matrices.  
+- The **event logs** are moving. Tracking the date range of logs today (04-16-2017), the logs ranged from a **_min: 2016-12-29 to max: 2017-04-16_**). This generates major issues for how **coordination networks** are constructed. As one needs a clear jump record of all corp members to construct spatio-temporal adjacency matrices.  
 
-Check out the external [recruitment process website](https://recruit.karmafleet.org/) for **karmafleet**
+- Check out the external [recruitment process website](https://recruit.karmafleet.org/) for **karmafleet**
+
+- Karjtan's allianceID is (`99003615`)  (see if you can't back out his network)
+
+- Great stackoverflow post about the [different community detection algorithms](http://stackoverflow.com/questions/9471906/what-are-the-differences-between-community-detection-algorithms-in-igraph) out there
+
+
+----------------------------------------------------------------------
+
+## Understanding the ITEM ID schema
+
+Kjartan just sent this along. It isolates the relevant logic behind CCP's item ID schema.
+
+      All items with itemID < 90.000.000 are items created by CCP and are so called system items.  System items have certain intervals of itemIDs and it goes like this...
+      {{{
+                    0 -        10.000   System items (including junkyards and other special purpose items
+              500.000 -     1.000.000   Factions
+            1.000.000 -     2.000.000   NPC corporations
+            3.000.000 -     4.000.000   NPC characters (agents and NPC corporation CEO's)
+            9.000.000 -    10.000.000   Universes
+           10.000.000 -    11.000.000   NEW-EDEN Regions
+           11.000.000 -    12.000.000   Wormhole Regions
+           20.000.000 -    21.000.000   NEW-EDEN Constellations
+           21.000.000 -    22.000.000   Wormhole Constellations
+           30.000.000 -    31.000.000   NEW-EDEN Solar systems
+           31.000.000 -    32.000.000   Wormhole Solar systems
+           40.000.000 -    50.000.000   Celestials (suns, planets, moons, asteroid belts)
+           50.000.000 -    60.000.000   Stargates
+           60.000.000 -    61.000.000   Stations created by CCP
+           61.000.000 -    64.000.000   Stations created from outposts
+           68.000.000 -    69.000.000   Station folders for stations created by CCP
+           69.000.000 -    70.000.000   Station folders for stations created from outposts
+           70.000.000 -    80.000.000   Asteroids
+           80.000.000 -    80.100.000   Control Bunkers
+           81.000.000 -    82.000.000   WiS Promenades
+           82.000.000 -    85.000.000   Planetary Districts
+
+           90.000.000 -    98.000.000   EVE characters created after 2010-11-03 (NOTE THAT THE OLD ONES ARE SADLY SCATTERED BETWEEN 100 AND 2100 MILLS)
+           98.000.000 -    99.000.000   Corporations created after 2010-11-03  (NOTE THAT THE OLD ONES ARE SADLY SCATTERED BETWEEN 100 AND 2100 MILLS)
+           99.000.000 -   100.000.000   EVE alliances created after 2010-11-03  (NOTE THAT THE OLD ONES ARE SADLY SCATTERED BETWEEN 100 AND 2100 MILLS)
+
+         2100.000.000 - 2.147.483.647   DUST characters
+      }}}
+
+      Utilize this knowledge whenever you can. Need to select all celestials in all solar systems?
+
+      {{{
+        SELECT *
+          FROM zinventory.items
+         WHERE locationID BETWEEN 30000000 AND 40000000 AND
+               itemID BETWEEN 40000000 AND 50000000
+      }}}
+
+      And If you needed only all planets doing the join to inventory.typesDx (to add a condition on the groupID of planets) is much cheaper from this reduced record set than for all records in invItems.

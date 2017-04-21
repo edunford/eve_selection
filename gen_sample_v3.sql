@@ -105,6 +105,13 @@ into #corpRec3
 from #corpRec2 cr 
 left join avejumps cjr on cjr.corporationID = cr.corporationID
 
+-- finally clean out corporations containing only DUST members (apparently cleaning by founding character
+
+
+
+
+
+
 
 -- save hard copy of sample for easy reference
 

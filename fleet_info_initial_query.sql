@@ -116,10 +116,52 @@ drop table #warpto2
 select * from #warpto2
 select sum(iif(corporationID = toCorpID,1,0)) as sameCorp, count(*) as N from #warpto2
 
--- the when players "warp to" other players, it's always players in thier corporation. Which is exactly what I want to see
+-- the when players "warp to" other players, it's sometimes players in their corporation, other times it is players out side their corporation.
 
 
+-- let's clean the logs to contain only the relevant characters and then assess their network behavior in R. 
+with tt as (
+select distinct corporationID
+from edvald_research.umd.crpSampSelection
+) select 
+w.*
+into #tmp
+from #warpto2 w 
+inner join tt c on w.corporationID = c.corporationID 
+where w.corporationID = w.toCorpID 
 
 
+select top 10* from edvald_research.umd.crpSampSelection
+
+
+select * from #tmp
+
+
+---- the network images that emerge from this set up are quite revealing. Just as a test. Let's try and back out K.'s 
+---- alliance activity for the relelvant time period. AllianceID = 99003615
+drop table #tmp
+with tt as (
+select
+distinct corporationID
+from ebs_FACTORY.eve.characterHistory 
+where allianceID = 99003615 and historyDate = '2017-04-01'
+) select 
+w.*
+into #tmp
+from #warpto2 w 
+inner join tt c on w.corporationID = c.corporationID 
+
+
+select
+t.*,
+cp.corporationName as cpname,
+cp2.corporationName as tocpname
+into edvald_research.umd.kartanAlliance
+from #tmp t 
+inner join ebs_RESEARCH.corporation.corporationsLookup cp  on t.corporationID = cp.corporationID 
+inner join ebs_RESEARCH.corporation.corporationsLookup cp2 on t.corporationID = cp2.corporationID 
+
+
+drop table edvald_research.umd.kartanAlliance
 
 
