@@ -4,6 +4,7 @@
 
 require(revemetrics)
 require(tidyverse)
+require(lubridate)
 
 
 
@@ -18,5 +19,14 @@ where corporationID in (@{corps})" %>% QueryDB(sql.params = list(corps=draw) )
 
 record %>% mutate(applied = as.numeric(status==0),
                   invited = as.numeric(status==8)) %>% 
-  arrange(eventDate,corporationID) %>% select(-status)
+  arrange(corporationID,eventDate) %>% select(-status) %>% 
+  mutate(m=month(eventDate),y=year(eventDate)) %>% 
+  group_by(corporationID,y,m) %>% 
+  summarize(applied=sum(applied),invited=sum(invited),total=n()) %>%
+  right_join(.,,on)
+  
+  ggplot(.,aes(m,total,group=corporationID)) + geom_line()
+
+
+
 head(record)

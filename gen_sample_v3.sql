@@ -105,7 +105,24 @@ into #corpRec3
 from #corpRec2 cr 
 left join avejumps cjr on cjr.corporationID = cr.corporationID
 
--- finally clean out corporations containing only DUST members (apparently cleaning by founding character
+
+-- finally clean out corporations containing only DUST members (apparently cleaning by founding character was insufficient to clean all these cases)
+select top 10* from #corpRec3
+
+IF OBJECT_ID('tempdb..#corpRec4') IS NOT NULL DROP TABLE #corpRec4;
+with dust as (
+	select 
+	max(corporationID) as corporationID,
+	avg(iif(employeeUserID between 2100000000 and 2147483647,1,0)) as dust
+	from #corpRec3
+	group by corporationID
+) select 
+cr.*
+into #corpRec4
+from #corpRec3 cr 
+left join dust d on d.corporationID = cr.corporationID
+where d.dust = 0
+
 
 
 
@@ -114,10 +131,12 @@ left join avejumps cjr on cjr.corporationID = cr.corporationID
 
 
 -- save hard copy of sample for easy reference
-
+-- drop table edvald_research.umd.crpSampSelection
 select *
 into edvald_research.umd.crpSampSelection
-from #corpRec3
+from #corpRec4
+
 
 
 select top 10* from edvald_research.umd.crpSampSelection
+select count(*) from edvald_research.umd.crpSampSelection
