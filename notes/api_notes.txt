@@ -1,0 +1,40 @@
+
+Re: the API —>
+
+There are two kinds of keys that we can use
+
+XMLAapi crest API (and easy api … both have the same credentials).
+
+All corps are using different api.
+
+XMLAapi — create API key manually. Key is made once. You can give key and create. These records are large. And we only keep the records for a month. This data is noisy.
+
+Crest API — login window on a website produces a access token that is implicitly. If the user deletes cookies, then a new token is generate.
+
+players rarely delete keys. 
+
+If you get one corp recruiters API key you can spider out to about 20% of the other keys. 
+
+XMLapi access logs are in SQL table that is truncated every month. 
+
+The crest logs elastic search that get cleared out on a rolling basis. A LOT of data. 1 TB a month. 
+
+The easy logs are going a stack driver on google. 
+
+Easiest starting point: get a dump XMLAPI access logs, and see what you can get there. Further down the line you’re really going to want to focus on user agents. Developed this so that CCP can talk with 3rd parties. User agents. 
+
+Vetting mechanism — it’s likely difficult to tease apart who is making the vetting request may be difficult for finding this from Jack Knife. 
+
+See Jack Knife. — this is standardized query method. It’s all funneled through a shared service.
+
+Reach out to a number of these sources.
+
+Talk to the EVE university.
+
+Talk to Brave. This would be good alliance. 
+
+Make a post on the EVE subreddit. And post that you’re a research and talk recruitment. 
+
+Think about this. The University of Cal-ley. (NPC corporation) Has core of players that have tried to put together a core group of people that play together. Uniquely among this group they have community. 
+
+Paul (community director) — can put me in contact with all these people. He’s useful. 
