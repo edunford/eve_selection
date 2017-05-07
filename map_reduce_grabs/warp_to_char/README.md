@@ -8,7 +8,7 @@ Referencing the `warpToMapper.py`.
 
 Establishing set up.
 
-    cd ~/hadoop/RELASE/hadoop/
+    cd ~/hadoop/RELEASE/hadoop/
 
     python doob.py --mapper warpToMapper.py --date 2017.04.01-2017.04.15 --output warpToCharLog
 
