@@ -12,8 +12,8 @@ use edvald_research
 		--create table umd.warptologs (eventDate date,characterID bigint, toCharID bigint, autopilot bit, fleetWarp bit, minDist float) 
 
 -- HADOOP TABLE	
-		declare @counterDate1 date = '2016-01-01';
-		declare @counterDate2 date = '2016-04-30';
+		declare @counterDate1 date = '2015-3-01';
+		declare @counterDate2 date = '2015-5-31';
 		insert into umd.warptologs (eventDate, characterID, toCharID, autopilot, fleetWarp, minDist)
 		EXEC hadoop.hive.query '
 		SELECT date as eventDate, ownerID as characterID, subjectType as toCharID, autopilot as autopilot, fleetWarp, minDist
