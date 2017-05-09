@@ -7,16 +7,22 @@ select * from hadoop.samples.eventLogs_park__Warp_Char
 
 use edvald_research
 
--- create initial save table into permanent table. 
---create table umd.warptologs (eventDate date, corporationID bigint, characterID bigint, targetID bigint, locationID bigint, minDist float)
+-- create initial save table into permanent table.
+--drop table umd.warptologs
+		--create table umd.warptologs (eventDate date,characterID bigint, toCharID bigint, autopilot bit, fleetWarp bit, minDist float) 
 
--- HADOOP TABLE
-		declare @counterDate1 date = '2017-04-14';
-		declare @counterDate2 date = '2017-04-15';
-		INSERT INTO umd.warptologs (eventDate, corporationid, characterID, targetID, locationID,minDist)
+-- HADOOP TABLE	
+		declare @counterDate1 date = '2016-08-01';
+		declare @counterDate2 date = '2016-12-31';
+		insert into umd.warptologs (eventDate, characterID, toCharID, autopilot, fleetWarp, minDist)
 		EXEC hadoop.hive.query '
-		SELECT date as eventDate, corporationID, characterID, targetID, locationID, minDist
-		  FROM eventLogs_all a
-		LATERAL VIEW json_tuple(a.value, "eventName", "dateTime", "corporationID", "ownerID", "subjectID", "locationID" ,"minDist") b AS eventName, date, corporationID, characterID, targetID, locationID, minDist
-		 WHERE dt between @date1 AND @date2 AND eventName = "park::Warp_Char"',@counterDate1, @counterDate2
+		SELECT date as eventDate, ownerID as characterID, subjectType as toCharID, autopilot as autopilot, fleetWarp, minDist
+			FROM eventLogs_all a
+		LATERAL VIEW json_tuple(a.value, "eventName", "dateTime", "ownerID","subjectType","autopilot","fleetWarp","minDist") b AS eventName, date, ownerID, subjectType, autopilot, fleetWarp, minDist
+			WHERE dt between @date1 AND @date2 AND eventName = "park::Warp_Char"',@counterDate1, @counterDate2
 
+
+-- check progress
+select count(*) from umd.warptologs
+select min(eventDate), max(eventDate) from umd.warptologs
+select top 10* from umd.warptologs
