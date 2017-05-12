@@ -1,0 +1,59 @@
+---
+title: "Corporation Sample Descriptives"
+output: html_notebook
+---
+
+# Overview
+
+```{r,echo=F,include=F}
+# Dependencies
+require(tidyverse)
+require(igraph)
+require(ggthemes)
+require(revemetrics)
+
+# Imporant the data
+corp_full = "select * from edvald_research.umd.crpSampSelection" %>% 
+  QueryDB()
+```
+
+# How the Population Sample was Generated
+For scope and processing, this analysis limits the total population of corporations from which it analyzes. Relevant corporations were identified along the following conditions. 
+
+1. **Contains 5+ Players**. This decision rule dictates that thecorporation must contain more than five unique individuals to be considered in the sample. A rare but not entirely uncommon feature of EVE is that one player will control multiple avatars, which are all member to the same corporation. This eases the distribution of resources between the different avatars. These types of corporations are dropped as they do not reflect the coordination dynamics central to this analysis. "Unique Individuals" were flagged using the players email address as a unique identifier. The main data analytics personnel at CCP underscored this method of identifyign all unique players.^[Note that CCP also tracks a "UserID" and a "customerID", both of which offer a type of unique identification. The userID is inconsistent if new accounts are created. Likewise, the customerID leverages the users IP address to differentiate between players; however, these IDs will change if a user consistently switchs his or her IP address (i.e. uses a different computer, or travels and plays in a different country). For these reasons, user email address offers a unique identification method as most players centralized the email in which their EVE updates and information goes. This allows the user email to be uniquely leveraged to identify distinct players.]
+
+2. **All Dust Characters Dropped**. Dust characters emerged out of a different game engine from the rest of EVE. In Dust, characters played not through ships but through human avatars. The game model resembled a standard first person future but with a twist: EVE and Dust spoke to each other. Thus, EVE players could coordinate planetary attacks that would occur in real time in Dust. The Dust venture ultimately folded, but residuals of these character IDs and corporations still exist in the data, especially as one moves back in time. The assumption is that the data generating process that underpins Dust coordination differs in imporant ways from the behavior being recovered in this analysis from players solely conducting themselves in EVE online. For this reason, all Dust corporation and corporations containing Dust character IDs are removed from the data.
+
+3. **Corporation Creation Date after Jan. 1, 2015**. Understanding group recruitment and selection, expansion, and coordination requires a complete time series of the coorporation from start to the present. This requires that one has the start date contained within the time series of all coorporations in the sample. I arbitrarily set this threshold for 1.1.2015. Thus, the sample excludes all corporations in operation prior to this point.
+
+Given the start date of this project (April 2017), the relevant time period spans from 2015 to mid-April 2017. 
+
+In generating the relevant population frame, key features of the corporation were retained. These feature includes: 
+
+- the **founder**: the player who started the corporation.
+- **all corporation employees** across the relevant time period (and their hire date).
+- **Demographic informatio**n about the employee and the founder (such as self-reported DOB, nationality, and language)
+- **aggregate information** about the corporation's behavior. This includes information regarding the number of distinct (i.e. human) players in the corporation (e.g. there could potentially be $N$ number of characters in the corp but only $M$ number of players, where $N > M$. For the following analysis, I care about how actual human are coordinating and interacting together in the environment, not just the number of avatars), the jump patterns of the corporation (i.e. does the corporation travel most in High Sec, Low Sec, Wormhole, or Null Sec space. Each security zone constrains players in different ways and makes demands on players in distinct ways.), and the average number of monthly jumps (which seeks to offer a rough metrec re: how active a corporation is).
+
+<font color="blue"> <u> From this "population" sample, subsamples will be drawn and analyzed</u></font>. That said, it's important to understand general properties of the population sample to highlight its properties. 
+
+# Sample Population Descriptives
+
+### Top Twenty Most Populated Corporations
+```{r,echo=F}
+corp_full %>% group_by(corporationName) %>% 
+  summarize(NdistinctUsers = max(distinctUsers),
+            Ncharacters=n()) %>% 
+  arrange(desc(NdistinctUsers)) %>% ungroup %>% 
+  top_n(NdistinctUsers,n=20) %>% 
+  reshape2::melt(data=.,id="corporationName") %>% 
+  ggplot(.,aes(x=reorder(corporationName,value),y=value,fill=variable)) +
+  geom_bar(stat="identity",position="dodge") + 
+  scale_fill_hc() +
+  coord_flip() + theme_hc() + theme(legend.title = element_blank()) +
+  xlab("Top 20 Corporations") + ylab("Count")
+```
+
+Though only a subset of the top 20 corporations by membership numbers, one can quickly identify two important features. First, "mega" corporations with 1,000 plus members is rare, and second, that there are often more characters than distinct users in these mega corps but that this property diminishes as the corporations shrink in size. 
+
+Specifically, _Pandemic Horde_ is a distinct outlier in terms of membership and behavior. This corporation is bent on watching the world burn, so to speak. Individuals join knowing that the goal is raiding and combat initiation. The corporation recruits indiscriminantly, and sees itself as a training hub for newer players looking to make the transition into low and null sec activity. 
