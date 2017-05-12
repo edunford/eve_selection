@@ -3,22 +3,39 @@ title: "Corporation Sample Descriptives"
 output: html_notebook
 ---
 
-# Overview
-
 ```{r,echo=F,include=F}
 # Dependencies
 require(tidyverse)
 require(igraph)
 require(ggthemes)
 require(revemetrics)
+require(stargazer)
+
 
 # Imporant the data
 corp_full = "select * from edvald_research.umd.crpSampSelection" %>% 
   QueryDB()
+corp_full = corp_full %>% filter(corpCreateDate <= "2017-04-15") # Ensure cut off
 ```
 
+# Overview
+
+The following data outline offers an overview of a subsample of EVE online corporations and thier members. The sample was generated mainly as a way of placing scope conditions on the EVE data, and to clean the data of known issue areas. Throughout this project I will make reference to two types of samples: the **population sample** which I will outline descriptives in this note, and the **sample**. The population sample constitues the curation of the EVE data to identiy and record all "relevant" corporations existing in the EVE data from Jan 1, 2015 to April 15, 2015. Corporations are in the sample if they were created within this date window. This means the time series on a corporation is unequal but that one always retains the start-onward series of each corporation. The "sample" then is just a random sample of corporations from this cleaned "population sample".
+
+The population sample contains 18,011 distinct corporations with 300,731 players from 194 countries specified countries who speak (as noted in the game) 24 languages.
+
+```{r,echo=F,results="asis"}
+corp_full %>% summarize(Corporations = n_distinct(corporationID),
+                        Players = n_distinct(employeeEmail) + 
+                          n_distinct(creatorEmail),
+                        Countries=n_distinct(employeeCountry),
+                        Language = n_distinct(employeeLanguage)) %>% 
+  stargazer(.,type="html",summary=F,rownames=F)
+```
+
+
 # How the Population Sample was Generated
-For scope and processing, this analysis limits the total population of corporations from which it analyzes. Relevant corporations were identified along the following conditions. 
+For scope and processing, this analysis limits the total population of corporations from which it analyzes. Relevant corporations were identified along the following conditions.
 
 1. **Contains 5+ Players**. This decision rule dictates that thecorporation must contain more than five unique individuals to be considered in the sample. A rare but not entirely uncommon feature of EVE is that one player will control multiple avatars, which are all member to the same corporation. This eases the distribution of resources between the different avatars. These types of corporations are dropped as they do not reflect the coordination dynamics central to this analysis. "Unique Individuals" were flagged using the players email address as a unique identifier. The main data analytics personnel at CCP underscored this method of identifyign all unique players.^[Note that CCP also tracks a "UserID" and a "customerID", both of which offer a type of unique identification. The userID is inconsistent if new accounts are created. Likewise, the customerID leverages the users IP address to differentiate between players; however, these IDs will change if a user consistently switchs his or her IP address (i.e. uses a different computer, or travels and plays in a different country). For these reasons, user email address offers a unique identification method as most players centralized the email in which their EVE updates and information goes. This allows the user email to be uniquely leveraged to identify distinct players.]
 
@@ -56,4 +73,24 @@ corp_full %>% group_by(corporationName) %>%
 
 Though only a subset of the top 20 corporations by membership numbers, one can quickly identify two important features. First, "mega" corporations with 1,000 plus members is rare, and second, that there are often more characters than distinct users in these mega corps but that this property diminishes as the corporations shrink in size. 
 
-Specifically, _Pandemic Horde_ is a distinct outlier in terms of membership and behavior. This corporation is bent on watching the world burn, so to speak. Individuals join knowing that the goal is raiding and combat initiation. The corporation recruits indiscriminantly, and sees itself as a training hub for newer players looking to make the transition into low and null sec activity. 
+Specifically, _Pandemic Horde_ is a distinct outlier in terms of membership and behavior. This corporation is bent on watching the world burn, so to speak. Individuals join knowing that the goal is raiding and combat initiation. The corporation recruits indiscriminantly, and sees itself as a training hub for newer players looking to make the transition into low and null sec activity.
+
+## Geographical Distribution of Players
+
+Below I map the countries of origin of players in the population sample. These geographic information are derived from both self-reported geographic location information, which is then can be corroborated by the user's IP address. Though not perfect, these geographic measures offer a general sense of the distribution of players from which the analytical samples are drawn. The blue countries denote locations from which a player comes from. 
+```{r,echo=F,message=F,warning=F,error=F}
+world <- map_data("world")
+world <- world[world$region != "Antarctica",] 
+
+countries = unique(corp_full$employeeCountry)
+countries[countries=="United States"] = "USA"
+world$fill = "grey"
+world[world$region %in% countries,"fill"] = "dodgerblue2"
+
+ggplot() + geom_map(data=world, map=world,
+                    aes(x=long, y=lat, map_id=region),
+                    color="white",fill=world$fill, 
+                    size=0.05) + theme_map()
+```
+
+

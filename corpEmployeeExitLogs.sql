@@ -25,7 +25,18 @@ select top 100* from edvald_research.umd.corpEmployeeExitLogs
 where characterID in (96019134, 95265675, 95482504)
 order by characterID, eventDate
 
--- examine by corporation (exit rate)
+-- examine by corporation 
 select top 100* from edvald_research.umd.corpEmployeeExitLogs 
 where exitCorp = 98382684 or enterCorp = 98382684
 order by eventDate
+
+-- generate exit rate measures 
+declare @targetcorp bigint = 98382684 
+select 
+eventDate,
+iif(exitCorp = @targetcorp,1,0) as memexit,
+iif(enterCorp = @targetcorp,1,0) as mementer
+from edvald_research.umd.corpEmployeeExitLogs 
+where exitCorp = @targetcorp or enterCorp = @targetcorp
+order by eventDate
+
