@@ -15,6 +15,7 @@ users2.gender as creatorGender,
 users2.createDate as creatorUserCreateDate,
 users2.characterCreateDate as creatorCharCreateDate,
 users2.languageName as creatorLanguage,
+users2.registeredCountry as creatorCountry,
 employ.characterID as employeeCharID,
 users.userID as employeeUserID,
 employ.characterName employeeCharName,
@@ -25,7 +26,8 @@ users.dateOfBirth as employeeDOB,
 users.gender as employeeGender,
 users.createDate as employeeUserCreateDate,
 users.characterCreateDate as employeeCharCreateDate,
-users.languageName as employeeLanguage
+users.languageName as employeeLanguage,
+users.registeredCountry as employeeCountry
 into #corpRec
 from ebs_RESEARCH.dbo.crpCorporations corps
 left join  ebs_RESEARCH.dustCharacter.charactersVx dust on dust.characterID = corps.creatorID 
@@ -39,7 +41,7 @@ where dust.characterID is NULL -- drop corps created by dust characters
 		and corps.creatorID > 1 -- drop NPC created corps
 		and corps.createDate >= '2015-01-01' -- subset by creation date (only consider corps created when the recruitment data overlaps)
 
-
+		
 -- subset primary sample to generate a list of corps that satisfy conditions
 IF OBJECT_ID('tempdb..#corpRec2') IS NOT NULL DROP TABLE #corpRec2;
 with corpSample as 
@@ -107,8 +109,6 @@ left join avejumps cjr on cjr.corporationID = cr.corporationID
 
 
 -- finally clean out corporations containing only DUST members (apparently cleaning by founding character was insufficient to clean all these cases)
-select top 10* from #corpRec3
-
 IF OBJECT_ID('tempdb..#corpRec4') IS NOT NULL DROP TABLE #corpRec4;
 with dust as (
 	select 
@@ -122,12 +122,6 @@ into #corpRec4
 from #corpRec3 cr 
 left join dust d on d.corporationID = cr.corporationID
 where d.dust = 0
-
-
-
-
-
-
 
 
 -- save hard copy of sample for easy reference
