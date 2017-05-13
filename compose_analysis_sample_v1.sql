@@ -58,32 +58,71 @@ select count(*) from edvald_research.umd.warptologs
 -- map on unique identifying information to partial out only interactions between unique players
 		IF OBJECT_ID('tempdb..#sampleWarp2') IS NOT NULL DROP TABLE #sampleWarp2;
 		with selection as ( -- only draw from subsample
-			select ss.*
-			from edvald_research.umd.crpSampSelection ss
+			select 
+			ss.historyDate as eventDate,
+			ss.corporationID,
+			ss.characterID,
+			ss.customerID
+			from ebs_FACTORY.eve.characterHistory ss
 			inner join #samp s on s.corporationID = ss.corporationID
-		) select sw.*,
-		iif(sel.employeeEmail is null,sel.creatorEmail,sel.employeeEmail) as characterEmail,
-		iif(sel2.employeeEmail is null,sel2.creatorEmail,sel2.employeeEmail) as toCharEmail
+		) select 
+		sw.*,
+		sel.customerID,
+		sel2.customerID as toCustomerID
 		into #sampleWarp2
 		from #sampleWarp sw
-		inner join selection sel on (sel.employeeCharID = sw.characterID or sel.creatorCharID = sw.characterID)
-		inner join selection sel2 on (sel2.employeeCharID = sw.toCharID or sel2.creatorCharID = sw.toCharID)
+		left join selection sel on (sel.eventDate = sw.eventDate and sel.corporationID = sw.corporationID and sel.characterID = sw.characterID)
+		left join selection sel2 on  (sel2.eventDate = sw.eventDate and sel2.corporationID = sw.toCorpID and sel2.characterID = sw.toCharID)
+		
 
+		-- again there is a slight expansion... need to investigate why (but for now, moving forward)
+		select distinct count(*) from #sampleWarp2
+		select distinct count(*) from #sampleWarp
 
+				-- large portion of interactions appear to be between the same customer
+				select count(*) 
+				from #sampleWarp2
+				where customerID = toCustomerID
+
+		-- drop the same player interactions
+		IF OBJECT_ID('tempdb..#sampleWarp3') IS NOT NULL DROP TABLE #sampleWarp3;
+		select *
+		into #sampleWarp3
+		from #sampleWarp2
+		where customerID != toCustomerID
+
+		select top 10* from #sampleWarp3
 
 
 -- draw sample entries from the Logged on/off logs
-
+		IF OBJECT_ID('tempdb..#samplogon') IS NOT NULL DROP TABLE #samplogon;
 		select l.* 
 		into #samplogon
 		from edvald_research.umd.charloggedOn l
 		inner join #samp s on l.corporationID = s.corporationID
+
+		-- map on customerID
+		IF OBJECT_ID('tempdb..#samplogon2') IS NOT NULL DROP TABLE #samplogon2;
+		with tmp as ( 
+			select 
+			ss.historyDate as eventDate,
+			ss.corporationID,
+			ss.characterID,
+			ss.customerID
+			from ebs_FACTORY.eve.characterHistory ss
+			inner join #samp s on s.corporationID = ss.corporationID
+		) select sw.*,
+		sel.customerID
+		into #samplogon2
+		from #samplogon sw
+		left join tmp sel on (sel.eventDate = sw.eventDate and sel.corporationID = sw.corporationID and sel.characterID = sw.characterID)
+
 		
+	
 
 
-
-select top 10* from #sampleWarp
-select top 10* from #samplogon
+select top 10* from #sampleWarp3
+select top 10* from #samplogon2
 -- generated condensed network measures for each corporation day.
 -- (1) who is online from the corporation (N)
 -- (2) who is coordinating, i.e. "warping to" another player (E)
@@ -96,8 +135,8 @@ select top 10* from #samplogon
 			select DISTINCT
 			eventDate,
 			corporationID,
-			characterID
-			from #samplogon
+			customerID
+			from #samplogon2
 		) select 
 		max(eventDate) as eventDate,
 		max(corporationID) as corporationID,
@@ -112,9 +151,9 @@ select top 10* from #samplogon
 			select DISTINCT
 			eventDate,
 			corporationID,
-			characterID,
-			toCharId
-			from #sampleWarp
+			customerID,
+			toCustomerId
+			from #sampleWarp3
 		) select 
 		max(eventDate) as eventDate,
 		max(corporationID) as corporationID,
@@ -138,25 +177,71 @@ select top 10* from #samplogon
 
 
 		-- drop instances when only one character from the corp was online.
+		IF OBJECT_ID('tempdb..#corpDensity2') IS NOT NULL DROP TABLE #corpDensity2;
 		select *,
 		iif(density is null,0,density) as density2
+		into #cropDensity2
 		from #corpDensity
 		where N_online > 1
 		order by eventDate,corporationID
+
 		
-select DISTINCT
-eventDate,
-corporationID,
-characterID,
-toCharID 
-from #sampleWarp
-where corporationID = 98368624 and eventDate = '2015-01-04'
+-- build selection aggregate logs
+
+IF OBJECT_ID('tempdb..#selection') IS NOT NULL DROP TABLE #selection;
+select 
+app.eventDate,
+app.corporationID,
+app.receiverID as characterID,
+iif(status=8,1,0) as invited,
+iif(status=0,1,0) as applied
+into #selection
+from edvald_research.umd.corporationApps app
+inner join #samp s on s.corporationID = app.corporationID
+
+
+IF OBJECT_ID('tempdb..#accepted') IS NOT NULL DROP TABLE #accepted;
+select 
+format(em.eventDate,'yyyy-MM-dd') as eventDate,
+em.characterID,
+em.enterCorp as corporationID,
+cast(1 as int) as accepted
+into #accepted
+from edvald_research.umd.corpEmployeeExitLogs em
+inner join #samp s on em.enterCorp = s.corporationID
+
+
+IF OBJECT_ID('tempdb..#selection2') IS NOT NULL DROP TABLE #selection2;
+select 
+sel.eventDate,
+a.eventDate eventDate2,
+sel.corporationID,
+sel.characterID,
+iif(sel.applied is null,0,sel.applied) as applied,
+iif(sel.invited is null,0,sel.invited) as invited,
+iif(a.accepted is null,0,a.accepted) as accepted
+into #selection2
+from #selection sel 
+--full join #accepted a on (sel.corporationID = a.corporationID and sel.eventDate = a.eventDate and sel.characterID = a.characterID)
+full join #accepted a on (sel.characterID = a.characterID and sel.corporationID = a.corporationID)
+--full outer join #accepted a on (sel.eventDate = a.eventDate and sel.characterID = a.characterID)
+
+
+
+-- need to remove single player issues
 
 select * 
-from #samplogon
-where corporationID = 98368624 and eventDate = '2015-01-04'
+from #selection
+where characterID = 90036110
+
+select * 
+from #accepted
+where characterID = 90036110
+
+select * 
+from #selection2
+where characterID = 90036110
 
 
 
-
-
+full outer join #selection s on em.enterCorp = s.corporationID
