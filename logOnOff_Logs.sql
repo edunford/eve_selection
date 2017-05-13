@@ -29,3 +29,14 @@ iif(l.eventTypeID = 30005,'logon','logoff') as eventType
 into #loggedon2
 from #loggedon l 
 inner join ebs_FACTORY.eve.characterHistory h on (l.ownerID = h.characterID and format(l.eventDate,'yyyy-MM-dd') = h.historyDate)
+
+select count(*) from #loggedon
+select count(*) from #loggedon2
+
+select *
+into edvald_research.umd.charloggedOn
+from #loggedon2
+
+
+-- Worked
+select top 10* from edvald_research.umd.charloggedOn
