@@ -31,35 +31,131 @@ select count(*) from edvald_research.umd.warptologs
 
 
 -- generate a RANDOM SAMPLE from the population sample of 500 corps.
-IF OBJECT_ID('tempdb..#samp') IS NOT NULL DROP TABLE #samp;
-with ss as (
-select distinct corporationID 
-from edvald_research.umd.crpSampSelection
-where corpCreateDate <= '2017-04-15'
-) select top 500 *
-into #samp 
-from ss
-ORDER BY RAND()
+		IF OBJECT_ID('tempdb..#samp') IS NOT NULL DROP TABLE #samp;
+		with ss as (
+		select distinct corporationID 
+		from edvald_research.umd.crpSampSelection
+		where corpCreateDate <= '2017-04-15'
+		) select top 500 *
+		into #samp 
+		from ss
+		ORDER BY RAND()
 
 
 -- draw entries from the interaction logs where 
 -- (a) corp members are interacting (warping to) members from the same corp
 -- (b) corporations are contained within the relevant sample
-with tmpwarp as(
-	select *
-	from #warpto2  
-	where corporationID = toCorpID
-) select w.*
-into #sampleWarp
-from tmpwarp w
-inner join #samp s on s.corporationID = w.corporationID
+		IF OBJECT_ID('tempdb..#sampleWarp') IS NOT NULL DROP TABLE #sampleWarp;
+		with tmpwarp as(
+			select *
+			from #warpto2  
+			where corporationID = toCorpID
+		) select w.*
+		into #sampleWarp
+		from tmpwarp w
+		inner join #samp s on s.corporationID = w.corporationID
+
+-- map on unique identifying information to partial out only interactions between unique players
+		IF OBJECT_ID('tempdb..#sampleWarp2') IS NOT NULL DROP TABLE #sampleWarp2;
+		with selection as ( -- only draw from subsample
+			select ss.*
+			from edvald_research.umd.crpSampSelection ss
+			inner join #samp s on s.corporationID = ss.corporationID
+		) select sw.*,
+		iif(sel.employeeEmail is null,sel.creatorEmail,sel.employeeEmail) as characterEmail,
+		iif(sel2.employeeEmail is null,sel2.creatorEmail,sel2.employeeEmail) as toCharEmail
+		into #sampleWarp2
+		from #sampleWarp sw
+		inner join selection sel on (sel.employeeCharID = sw.characterID or sel.creatorCharID = sw.characterID)
+		inner join selection sel2 on (sel2.employeeCharID = sw.toCharID or sel2.creatorCharID = sw.toCharID)
 
 
-select top 100* from #sampleWarp
-select count(*) from #sampleWarp
 
 
- 
+-- draw sample entries from the Logged on/off logs
+
+		select l.* 
+		into #samplogon
+		from edvald_research.umd.charloggedOn l
+		inner join #samp s on l.corporationID = s.corporationID
+		
+
+
+
+select top 10* from #sampleWarp
+select top 10* from #samplogon
+-- generated condensed network measures for each corporation day.
+-- (1) who is online from the corporation (N)
+-- (2) who is coordinating, i.e. "warping to" another player (E)
+-- (3) network density measure: actual connections (E) over potential connections (N*(N-1))
+-- NOTE: the assumption is that the connections are directed. Thus no need to (N*N-1)/2 for the PC
+
+		-- generate online counts
+		IF OBJECT_ID('tempdb..#dailyOnlineCounts') IS NOT NULL DROP TABLE #dailyOnlineCounts;
+		with N as (
+			select DISTINCT
+			eventDate,
+			corporationID,
+			characterID
+			from #samplogon
+		) select 
+		max(eventDate) as eventDate,
+		max(corporationID) as corporationID,
+		count(*) as N_online
+		into #dailyOnlineCounts
+		from N 
+		group by corporationID, eventDate
+
+		-- generate edge counts
+		IF OBJECT_ID('tempdb..#dailyEdgeCounts') IS NOT NULL DROP TABLE #dailyEdgeCounts;
+		with E as(
+			select DISTINCT
+			eventDate,
+			corporationID,
+			characterID,
+			toCharId
+			from #sampleWarp
+		) select 
+		max(eventDate) as eventDate,
+		max(corporationID) as corporationID,
+		count(*) as N_edges
+		into #dailyEdgeCounts
+		from E
+		group by eventDate,corporationID
+
+		-- combine and generate density metric
+		-- right join because we want to know when corp members were online but there were no connections
+		IF OBJECT_ID('tempdb..#corpDensity') IS NOT NULL DROP TABLE #corpDensity;
+		select 
+		n.eventDate,
+		n.corporationID,
+		n.N_online,
+		e.N_edges,
+		round(cast((e.N_edges) as decimal)/((cast((n.N_online)*(n.N_online-1) as decimal))),4) as density
+		into #corpDensity
+		from #dailyEdgeCounts e
+		right join #dailyOnlineCounts n on (e.corporationID = n.corporationID and e.eventDate = n.eventDate)
+
+
+		-- drop instances when only one character from the corp was online.
+		select *,
+		iif(density is null,0,density) as density2
+		from #corpDensity
+		where N_online > 1
+		order by eventDate,corporationID
+		
+select DISTINCT
+eventDate,
+corporationID,
+characterID,
+toCharID 
+from #sampleWarp
+where corporationID = 98368624 and eventDate = '2015-01-04'
+
+select * 
+from #samplogon
+where corporationID = 98368624 and eventDate = '2015-01-04'
+
 
 
 
