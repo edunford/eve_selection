@@ -91,7 +91,6 @@ select count(*) from edvald_research.umd.warptologs
 		from #sampleWarp2
 		where customerID != toCustomerID
 
-		select top 10* from #sampleWarp3
 
 
 -- draw sample entries from the Logged on/off logs
@@ -117,17 +116,12 @@ select count(*) from edvald_research.umd.warptologs
 		from #samplogon sw
 		left join tmp sel on (sel.eventDate = sw.eventDate and sel.corporationID = sw.corporationID and sel.characterID = sw.characterID)
 
-		
 	
-
-
-select top 10* from #sampleWarp3
-select top 10* from #samplogon2
 -- generated condensed network measures for each corporation day.
 -- (1) who is online from the corporation (N)
 -- (2) who is coordinating, i.e. "warping to" another player (E)
 -- (3) network density measure: actual connections (E) over potential connections (N*(N-1))
--- NOTE: the assumption is that the connections are directed. Thus no need to (N*N-1)/2 for the PC
+-- NOTE: the assumption is that the connections are directed. Thus no need to divide PC by 2 (i.e. (N*N-1)/2)
 
 		-- generate online counts
 		IF OBJECT_ID('tempdb..#dailyOnlineCounts') IS NOT NULL DROP TABLE #dailyOnlineCounts;
@@ -178,9 +172,13 @@ select top 10* from #samplogon2
 
 		-- drop instances when only one character from the corp was online.
 		IF OBJECT_ID('tempdb..#corpDensity2') IS NOT NULL DROP TABLE #corpDensity2;
-		select *,
-		iif(density is null,0,density) as density2
-		into #cropDensity2
+		select 
+		eventDate,
+		corporationID,
+		N_online,
+		iif(N_edges is null,0,N_edges) as N_edges,
+		iif(density is null,0,density) as density
+		into #corpDensity2
 		from #corpDensity
 		where N_online > 1
 		order by eventDate,corporationID
@@ -225,7 +223,6 @@ select top 10* from #samplogon2
 			left join ebs_FACTORY.eve.characterHistory h on (s.eventDate = h.historyDate and s.characterID = h.characterID)
 
 
-
 			IF OBJECT_ID('tempdb..#selection3') IS NOT NULL DROP TABLE #selection3;
 			select distinct
 			sel.eventDate,
@@ -240,12 +237,12 @@ select top 10* from #samplogon2
 			from #selection2 sel 
 			full join #accepted2 a on (sel.characterID = a.characterID and sel.corporationID = a.corporationID)
 
-
-			select top 100* from #selection3
+			-- clear null entries
+			IF OBJECT_ID('tempdb..#selection4') IS NOT NULL DROP TABLE #selection4;
+			select * 
+			into #selection4
+			from #selection3
 			where corporationID is not NULL
-
-			select top 100* from #selection3
-			where characterID =95360124
 
 
 
@@ -254,15 +251,43 @@ select top 10* from #samplogon2
 			sum(invited)+sum(applied) as total_applicants,
 			sum(invited) as total_invite,
 			sum(applied) as total_applied,
-			sum(accepted) as total_accepted,
+			sum(accepted) as total_accepted
 			--cast(sum(accepted) as decimal)/sum(invited)+sum(applied)) as propAppliedEnter,
 			--cast(sum(invited) as decimal)/sum(invited)+sum(applied)) as propInvitedEnter
-			from #selection3
+			from #selection4
 			group by corporationID
 
-			select * from #selection2
+
+-- generate logs needed for aggregate exit and size by corp
+
+			IF OBJECT_ID('tempdb..#size') IS NOT NULL DROP TABLE #size;
+			select e.*  
+			into #size
+			from edvald_research.umd.corpEmployeeExitLogs e
+			inner join #samp s on (e.enterCorp = s.corporationID or e.exitCorp = s.corporationID)
 
 
-			-- ahve network density by the day.
-			-- have the selection info
-			-- [ ] need the group size and exit rate (daily of group size, and count of individuals leaving)
+-- retain logs for import into R
+
+select *
+into edvald_research.umd.samp1_networkDensity
+from #corpDensity2
+
+select * 
+into edvald_research.umd.samp1_selectionProcess
+from #selection4
+
+-- size
+select * 
+into edvald_research.umd.samp1_employeeFlows
+from #size
+
+-- sample information
+
+select S.*
+into edvald_research.umd.samp1_sampleDescr
+from edvald_research.umd.crpSampSelection S
+inner join #samp ss on S.corporationID = ss.corporationID
+
+
+
