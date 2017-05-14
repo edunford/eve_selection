@@ -186,62 +186,83 @@ select top 10* from #samplogon2
 		order by eventDate,corporationID
 
 		
--- build selection aggregate logs
+-- build aggregate selection logs
 
-IF OBJECT_ID('tempdb..#selection') IS NOT NULL DROP TABLE #selection;
-select 
-app.eventDate,
-app.corporationID,
-app.receiverID as characterID,
-iif(status=8,1,0) as invited,
-iif(status=0,1,0) as applied
-into #selection
-from edvald_research.umd.corporationApps app
-inner join #samp s on s.corporationID = app.corporationID
-
-
-IF OBJECT_ID('tempdb..#accepted') IS NOT NULL DROP TABLE #accepted;
-select 
-format(em.eventDate,'yyyy-MM-dd') as eventDate,
-em.characterID,
-em.enterCorp as corporationID,
-cast(1 as int) as accepted
-into #accepted
-from edvald_research.umd.corpEmployeeExitLogs em
-inner join #samp s on em.enterCorp = s.corporationID
+			IF OBJECT_ID('tempdb..#selection') IS NOT NULL DROP TABLE #selection;
+			select 
+			app.eventDate,
+			app.corporationID,
+			app.receiverID as characterID,
+			iif(status=8,1,0) as invited,
+			iif(status=0,1,0) as applied
+			into #selection
+			from edvald_research.umd.corporationApps app
+			inner join #samp s on s.corporationID = app.corporationID 
+			
+			IF OBJECT_ID('tempdb..#selection2') IS NOT NULL DROP TABLE #selection2;
+			select s.*,
+			h.customerID
+			into #selection2
+			from #selection s
+			left join ebs_FACTORY.eve.characterHistory h on (s.eventDate = h.historyDate and s.characterID = h.characterID)
 
 
-IF OBJECT_ID('tempdb..#selection2') IS NOT NULL DROP TABLE #selection2;
-select 
-sel.eventDate,
-a.eventDate eventDate2,
-sel.corporationID,
-sel.characterID,
-iif(sel.applied is null,0,sel.applied) as applied,
-iif(sel.invited is null,0,sel.invited) as invited,
-iif(a.accepted is null,0,a.accepted) as accepted
-into #selection2
-from #selection sel 
---full join #accepted a on (sel.corporationID = a.corporationID and sel.eventDate = a.eventDate and sel.characterID = a.characterID)
-full join #accepted a on (sel.characterID = a.characterID and sel.corporationID = a.corporationID)
---full outer join #accepted a on (sel.eventDate = a.eventDate and sel.characterID = a.characterID)
+			IF OBJECT_ID('tempdb..#accepted') IS NOT NULL DROP TABLE #accepted;
+			select 
+			format(em.eventDate,'yyyy-MM-dd') as eventDate,
+			em.characterID,
+			em.enterCorp as corporationID,
+			cast(1 as int) as accepted
+			into #accepted
+			from edvald_research.umd.corpEmployeeExitLogs em
+			inner join #samp s on em.enterCorp = s.corporationID
+
+			IF OBJECT_ID('tempdb..#accepted2') IS NOT NULL DROP TABLE #accepted2;
+			select s.*,
+			h.customerID
+			into #accepted2
+			from #accepted s
+			left join ebs_FACTORY.eve.characterHistory h on (s.eventDate = h.historyDate and s.characterID = h.characterID)
 
 
 
--- need to remove single player issues
+			IF OBJECT_ID('tempdb..#selection3') IS NOT NULL DROP TABLE #selection3;
+			select distinct
+			sel.eventDate,
+			a.eventDate acceptedDate,
+			sel.corporationID,
+			iif(sel.customerID is null,a.customerID,sel.customerID) as customerID,
+			iif(sel.characterID is null,a.characterID,sel.characterID) as characterID,
+			iif(sel.applied is null,0,sel.applied) as applied,
+			iif(sel.invited is null,0,sel.invited) as invited,
+			iif(a.accepted is null,0,a.accepted) as accepted
+			into #selection3
+			from #selection2 sel 
+			full join #accepted2 a on (sel.characterID = a.characterID and sel.corporationID = a.corporationID)
 
-select * 
-from #selection
-where characterID = 90036110
 
-select * 
-from #accepted
-where characterID = 90036110
+			select top 100* from #selection3
+			where corporationID is not NULL
 
-select * 
-from #selection2
-where characterID = 90036110
+			select top 100* from #selection3
+			where characterID =95360124
 
 
 
-full outer join #selection s on em.enterCorp = s.corporationID
+			select 
+			max(corporationID) as corporationID,
+			sum(invited)+sum(applied) as total_applicants,
+			sum(invited) as total_invite,
+			sum(applied) as total_applied,
+			sum(accepted) as total_accepted,
+			--cast(sum(accepted) as decimal)/sum(invited)+sum(applied)) as propAppliedEnter,
+			--cast(sum(invited) as decimal)/sum(invited)+sum(applied)) as propInvitedEnter
+			from #selection3
+			group by corporationID
+
+			select * from #selection2
+
+
+			-- ahve network density by the day.
+			-- have the selection info
+			-- [ ] need the group size and exit rate (daily of group size, and count of individuals leaving)
