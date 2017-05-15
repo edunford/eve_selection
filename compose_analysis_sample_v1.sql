@@ -196,67 +196,10 @@ select count(*) from edvald_research.umd.warptologs
 			into #selection
 			from edvald_research.umd.corporationApps app
 			inner join #samp s on s.corporationID = app.corporationID 
-			
-			IF OBJECT_ID('tempdb..#selection2') IS NOT NULL DROP TABLE #selection2;
-			select s.*,
-			h.customerID
-			into #selection2
-			from #selection s
-			left join ebs_FACTORY.eve.characterHistory h on (s.eventDate = h.historyDate and s.characterID = h.characterID)
 
 
-			IF OBJECT_ID('tempdb..#accepted') IS NOT NULL DROP TABLE #accepted;
-			select 
-			format(em.eventDate,'yyyy-MM-dd') as eventDate,
-			em.characterID,
-			em.enterCorp as corporationID,
-			cast(1 as int) as accepted
-			into #accepted
-			from edvald_research.umd.corpEmployeeExitLogs em
-			inner join #samp s on em.enterCorp = s.corporationID
-
-			IF OBJECT_ID('tempdb..#accepted2') IS NOT NULL DROP TABLE #accepted2;
-			select s.*,
-			h.customerID
-			into #accepted2
-			from #accepted s
-			left join ebs_FACTORY.eve.characterHistory h on (s.eventDate = h.historyDate and s.characterID = h.characterID)
-
-
-			IF OBJECT_ID('tempdb..#selection3') IS NOT NULL DROP TABLE #selection3;
-			select distinct
-			sel.eventDate,
-			a.eventDate acceptedDate,
-			sel.corporationID,
-			iif(sel.customerID is null,a.customerID,sel.customerID) as customerID,
-			iif(sel.characterID is null,a.characterID,sel.characterID) as characterID,
-			iif(sel.applied is null,0,sel.applied) as applied,
-			iif(sel.invited is null,0,sel.invited) as invited,
-			iif(a.accepted is null,0,a.accepted) as accepted
-			into #selection3
-			from #selection2 sel 
-			full join #accepted2 a on (sel.characterID = a.characterID and sel.corporationID = a.corporationID)
-
-			-- clear null entries
-			IF OBJECT_ID('tempdb..#selection4') IS NOT NULL DROP TABLE #selection4;
-			select * 
-			into #selection4
-			from #selection3
-			where corporationID is not NULL
-
-
-
-			select 
-			max(corporationID) as corporationID,
-			sum(invited)+sum(applied) as total_applicants,
-			sum(invited) as total_invite,
-			sum(applied) as total_applied,
-			sum(accepted) as total_accepted
-			--cast(sum(accepted) as decimal)/sum(invited)+sum(applied)) as propAppliedEnter,
-			--cast(sum(invited) as decimal)/sum(invited)+sum(applied)) as propInvitedEnter
-			from #selection4
-			group by corporationID
-
+			select * from edvald_research.umd.corporationApps
+			where receiverID = 1761102685
 
 -- generate logs needed for aggregate exit and size by corp
 
@@ -265,6 +208,7 @@ select count(*) from edvald_research.umd.warptologs
 			into #size
 			from edvald_research.umd.corpEmployeeExitLogs e
 			inner join #samp s on (e.enterCorp = s.corporationID or e.exitCorp = s.corporationID)
+			
 
 
 -- retain logs for import into R
@@ -274,8 +218,8 @@ into edvald_research.umd.samp1_networkDensity
 from #corpDensity2
 
 select * 
-into edvald_research.umd.samp1_selectionProcess
-from #selection4
+into edvald_research.umd.samp1_selection
+from #selection
 
 -- size
 select * 
