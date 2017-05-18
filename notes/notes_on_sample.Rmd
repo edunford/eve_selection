@@ -1,5 +1,6 @@
 ---
-title: "Corporation Sample Descriptives"
+title: "Initial Selection Analysis Descriptives"
+date: 'May 15, 2017'
 output: html_notebook
 ---
 
@@ -18,7 +19,7 @@ corp_full = "select * from edvald_research.umd.crpSampSelection" %>%
 corp_full = corp_full %>% filter(corpCreateDate <= "2017-04-15") # Ensure cut off
 ```
 
-# Overview
+# Overview of the Sample
 
 The following data outline offers an overview of a subsample of EVE online corporations and thier members. The sample was generated mainly as a way of placing scope conditions on the EVE data, and to clean the data of known issue areas. Throughout this project I will make reference to two types of samples: the **population sample** which I will outline descriptives in this note, and the **sample**. The population sample constitues the curation of the EVE data to identiy and record all "relevant" corporations existing in the EVE data from Jan 1, 2015 to April 15, 2015. Corporations are in the sample if they were created within this date window. This means the time series on a corporation is unequal but that one always retains the start-onward series of each corporation. The "sample" then is just a random sample of corporations from this cleaned "population sample".
 
@@ -93,4 +94,91 @@ ggplot() + geom_map(data=world, map=world,
                     size=0.05) + theme_map()
 ```
 
+# Corporation as a Unit
+The primary unit of analysis is a **member in a corporation** but much of the metrics for this iteraction are generated on the corporation level (such as network density, which measures the interactions between members). The are primary concerns surrounds how unique players in a corporation coordinate and cooperate when playing the game. Corporations in EVE are self-contained units in that the group boundary is clearly delineated within the game. This saves one from needing to "discover" groupings within the interaction patterns between all players (i.e. via a community detection algorithm). Thus, this analysis seeks to exploit the interactions within these corporations to measure the relationship between the selectivity of the group with respect to new members and the underlyign cohesion within the group.  
+
+## Membership Flows
+Corporation membership is dynamic: some corporations hold onto members for a long time whereas others shed and gain members regularly. When examining group network behavior within corporations, the concept of a membership "flow"" is useful. 
+
+Members come and members go, sometimes in large numbers. Observing the flow of participants in and out of a corporation helps approximate membership stresses that might explain some of the variation in cohesion patterns. In addition, indicators such as the likelihood of exiting the group provide valuable information on retention.
+
+To demonstrate these flows, I present a time series plot of 6 corporations randomly selected from the population sample. What is important to note is the fluctuations within membership levels as new members are add and exit. The point is that the potential forms of interaction that one can plausibly observe vary given the number of members. Thus, talking about membership, cohesion, and selection in inevitably a time series problem (one in which I ignore in this initial analysis).
+
+```{r,echo=F,fig.heigh=16,fig.width=10}
+load(file="~/ETD/selection/data/for_hanna_5_15_2017.Rdata")
+
+plot_size = function(corpID){ # Quick plot of membership flows
+            flow.rec2 %>% filter(corporationID%in% corpID) %>% 
+              reshape2::melt(id = c("corporationID","eventDate")) %>% 
+              ggplot(.) + geom_line(aes(x=eventDate,y=value,color=variable),lwd=1.5) +
+              scale_color_hc() + theme_hc() + facet_wrap(~corporationID,ncol = 2) +
+              ylab("Membership Count") + xlab("Date")
+          }
+
+set.seed(235)
+scorps[sample(1:500,6)] %>%  plot_size(.)
+```
+
+
+# Analysis
+The following analysis is conducted on a simple random sample of 500 corporations from the population sample. The reason behind using a random sample rather than the whole population was primarily motivated by the need for more theory development. Through sampling, one can avoid data fitting to a limited, non-repeatable data source. Sampling also offers the flexibility in terms of computational processing.
+
+## Measuring Selection
+First, it is key to understand what the recruitment process is in EVE Online and how it play out? Recruitment in EVE mirrors that of real world firms in that potential employees apply or are invited into a corporation. When applying, applicants are often vetted through a request for an API key. CCP, the company that created EVE, has created an easy way for players to share information about one another through an API that characters themselves can generate. Access to this API record is limited and noisy; thus, information regarding the degree to which this process plays out is limited. 
+
+Once vetted, members are accepted for membership. Now, it's key to note that this process plays out differently within different corporations (which is the main thrust of this investigation). Some corporations in the sample appear to offer only a limited number of individuals who apply into their ranks, whereas other groups appear to be open doors. I argue that through understanding these process we can understand a key feature of how groups develop and decay. 
+
+In this analysis, selection is measured first by extracting data from the game's corporate application logs. These logs contain information regarding which characters were invited, and which characters applied to a corporation, offering a time series of the in-game application process. 
+
+In broad stroaks, information on who applied and who was invited could be roughly used to approximate supply and demand. Corporations with a large number of applications could be thought of as "in demand" and rich in a supply of labor whereas a corporation with a large number of invitations could be thought of as in higher demand of labor. 
+
+For now, a single variant of the application records are used to offer a rough proxy for group selectivity. By matching the application records to the membership flow data, it's possible to back out who applied and who was actually accepted from a corporation. One can then leverage the information about the proportion of members who applied and were not accepted over the total number of players who applied to generate metrics on the groups selectivity, where values closer to 0 means that more of those who applied to join the group were let in and values closer to 1 denotes the opposite. Though imperfect, given some of the difficulty with these logs (which I outline in greater detail below), this offers a first cut at the selection processes within groups. 
+
+## Measuring Cohesion
+Group cohesion is measured by looking at the coordination between players. Player coordination, however, is a computationally taxing concept to recover from the data. First, one needs to know when players are in the same space and time to make a plausible assessment about coordination, but even then there are serious limitations. For example, one might ride the same bus to work each day with the same people (i.e. is in the same time and space as another) but share no real connection with them. 
+
+To get around the spatiotemporal limitations of backing out coordination networks, I use a unique log that records when players "warp to" another players. In the game, this process plays out as follows. Two players are going to do something together like mine an astroid or attack another player. To meet up, one player locks onto another and "warps to" them. This behavior consistently follows from coordination and offers a useful proxy for player interactions that are underpinned by cooperative behavior. Thus, each "warp to" is given a tie, and the links between players can be thought of as dynamic network of who is working with who.
+
+As a rough (and admittedly naive) measure of cohesion, I look at the daily **network density**. Network density is measured by first considering all players and their potential connections, which is to say: of all the players in the corporation online today, if they were all coordinating, they would all have ties. Thus, we assess this counter factual world by comparing it to the observed world where, say, only some players interacted. The network density measure is then generated by taking the actual ties and dividing it by the potential ties. Thus, values closer to 0 denote little to no coordination and values closer to 1 denote higher levels of coordination between players.
+
+I use the concept of coordination as a proxy for group cohesion as it offers a viable way of understanding how players spend time and work together. A serious limitation of this measure, of course, is that it will be dramatically smaller in groups with larger populations. Thus, in a group such as the pandemic horde, the network density measure is often approaching 0 even when a fair number of players are working together.
+
+## Initial Findings 
+The following table presents two forms of initial findings. First, I aggregate all measure to the corporation level, and then I disaggregate down to the month. 
+
+```{r,echo=F,results='asis',fig.wigth=6}
+M %>% select(aveDens,selective,ave_size,ave_exit) %>% 
+  stargazer(.,type="html",title = "Descriptive Statistics Aggregated by Corporation")
+
+# Model 1
+mod1 = lm(aveDens~selective,data=M)
+mod2 = lm(aveDens~selective+log(ave_size+1),data=M)
+mod3 = lm(aveDens~selective+ave_exit,data=M)
+mod4 = lm(aveDens~selective+log(ave_size+1)+ave_exit,data=M)
+
+stargazer(mod1,mod2,mod3,mod4,type="html",title = "Selection on Network Density (by Corporation)",dep.var.labels = "Network Density")
+
+```
+
+
+```{r,echo=F,results='asis'}
+
+M2 %>% select(aveDens,selective,ave_size,ave_exit) %>% 
+  stargazer(.,type="html",title = "Descriptive Statistics Aggregated by Corporation-Month")
+
+mod5 = lm(aveDens~selective,data=M2)
+mod6 = lm(aveDens~selective+log(ave_size+1),data=M2)
+mod7 = lm(aveDens~selective+ave_exit,data=M2)
+mod8 = lm(aveDens~selective+log(ave_size+1)+ave_exit,data=M2)
+
+stargazer(mod5,mod6,mod7,mod8,type="html",title = "Selection on Network Density (by Corporation-Month)",dep.var.labels = "Network Density")
+```
+
+
+These initial results demonstrate a relationship between how selective a group is and its network density, but it does so in a way that is theoretically opposite to my predictions. Rather than selectivity as a source of greater cohesion, it would appear that the more applications a group ignores, less cohesive it is. 
+
+## Issues and Concerns
+This result is likely due to group deterioration. That is, groups tend to accept less applications because the group itself is falling apart. The ordering of the relationship can be confirmed when flipping the IV and the DV. In fact, network density is a good predictor of reductions in the selectivity of a group but negatively so. This could mean that as groups coordinate more they are willing to let more members in, implying a kind of group momentum that alters their selection behavior.
+
+All in all, the network and selection measure appear to be problematic and merit being measured in a more novel way.
 

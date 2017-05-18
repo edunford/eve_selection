@@ -206,6 +206,7 @@ sampFlows = "select * from edvald_research.umd.samp1_employeeFlows" %>% QueryDB(
                 rejected = round(invited_not_accepted/total_invited,3),
                 funky=round(sum(accepted_no_app)/total_accepted,3))
     sel_process.month$selective[is.nan(sel_process.month$selective)] = 0
+    sel_process.month$rejected[is.nan(sel_process.month$rejected)] = 0
     
     dens.month = sampDens %>%  mutate(m=month(eventDate),y=year(eventDate)) %>% 
       group_by(corporationID,m,y) %>% 
@@ -219,8 +220,21 @@ sampFlows = "select * from edvald_research.umd.samp1_employeeFlows" %>% QueryDB(
        
     M2 = merge(sel_process.month,dens.month,by=c("corporationID","m","y"))
     M2 = merge(M2,flow.month,by=c("corporationID","m","y"))
+    M2$ave_size[M2$ave_size<0] = 0
 
     summary(lm(aveDens~selective,data=M2))
+    summary(lm(aveDens~funky,data=M2))
     summary(lm(aveDens~selective+ave_size,data=M2))
-    summary(lm(aveDens~selective+ave_exit,data=M2))
+    summary(lm(aveDens~selective+total_invited,data=M2))
+    summary(lm(aveDens~selective+total_applied,data=M2))
+    summary(lm(ave_size~selective,data=M2))
+    
+    
+    save(scorps,flow.rec2,M,M2,file="~/ETD/selection/data/for_hanna_5_15_2017.Rdata")
+    
+    
+    M2 %>% group_by(corporationID) %>%  mutate(selectionLag = lag(selective,1)) %>% 
+      lm(selectionLag~aveDens,data=.) %>%  summary(.)
+    
+   
     
