@@ -30,6 +30,12 @@ A1 %>% group_by(eventDate,corporationID) %>% tally() %>% arrange(eventDate) %>%
   ggplot(data=.,aes(x=as.Date(eventDate),y=n)) + 
   geom_line(lwd=1)+ theme_hc() + facet_wrap(facets=~corporationID,ncol=4)
 
+# Interaction Trends Within/Between Corporations
+A1 %>% mutate(coord=ifelse(corporationID!=toCorpID,"between","within")) %>% 
+  group_by(eventDate,coord) %>% tally() %>% arrange(eventDate) %>% 
+  ggplot(data=.,aes(x=as.Date(eventDate),y=n,color=coord)) + 
+  geom_line(lwd=.7)+ theme_hc() + facet_wrap(facets=~coord,nrow=2) + geom_point()
+
 
 # The STATIC Network ----------------------------------------------
 
@@ -46,11 +52,11 @@ A1 %>% group_by(eventDate,corporationID) %>% tally() %>% arrange(eventDate) %>%
 
     
 # By individuals clustered within corporations 
-  em = A1 %>% #filter(eventDate=='2016-10-04') %>% 
+  em = A1 %>% filter(eventDate=='2017-02-04') %>% 
     distinct %>% 
     select(characterID,toCharID) %>% as.matrix();colnames(em) = NULL
   actors = unique(c(em[,1],em[,2]))
-  net <- graph_from_data_frame(em,actors,directed=T)
+  net <- graph_from_data_frame(em,actors,directed=F)
   V(net)$color = cmap$color[match(actors,cmap$characterID)]
   V(net)$corporationID = cmap$corporationID[match(actors,cmap$characterID)]
   plot.igraph(net,vertex.color=V(net)$color,vertex.frame.color="white",
@@ -79,5 +85,7 @@ A1 %>% group_by(eventDate,corporationID) %>% tally() %>% arrange(eventDate) %>%
 
 
 
+  
+  # Need to think about fleets. Who is in them and how that works under times of stress.
 
 render.d3movie(network(net),output.mode = 'htmlWidget')
