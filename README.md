@@ -10,3 +10,12 @@ Finally, the project will examine the correlation between recruitment processes 
 ## Auxiliary Targets
 
 - Examine the association between group size and cohesion. Are there patterns or trends that are ubiquitous across groups of a certain size? That is, groups of a certain size may be required to delegate and formalize.  
+
+
+## Renewed Focus on Alliances
+Qualitatively, alliance is where the story is at. The goal is to examine the selectivity of alliances and the groups that compose them, focusing on NULL space alliances that must mobilize when their territory is being attacked.
+
+Questions: 
+- Does selection predict mobilization (that is, individuals coming online and defending territory when it is challenged)?
+- Does selection predict how groups work together? Is there mixing of different groups or do groups remain factional?
+- How are resources shared in an alliance? Does a more stringent selection process make alliances more willing to pool resources?
